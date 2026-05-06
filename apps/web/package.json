@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@remitchain/sdk": "workspace:*",
-    "@stellar/freighter-api": "^2.1.3",
+    "@stellar/freighter-api": "^6.0.1",
     "@stellar/stellar-sdk": "^12.3.0",
     "@tanstack/react-query": "^5.51.1",
     "class-variance-authority": "^0.7.0",
