@@ -1,18 +1,19 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
 
+  "files": {
+    "ignore": ["**/*.css"]
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "error",
-        "noArrayIndexKey": "off",
-        "noUnknownAtRules": "off"
+        "noArrayIndexKey": "off"
       },
       "correctness": {
-        "noUnusedVariables": "error",
-        "noInvalidPositionAtImportRule": "off"
+        "noUnusedVariables": "error"
       }
     }
   },
