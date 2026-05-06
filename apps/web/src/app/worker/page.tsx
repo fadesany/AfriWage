@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { Clock, Home, MapPin, TrendingUp, Users, Wallet } from 'lucide-react';
 import Link from 'next/link';
-import { Home, Users, Wallet, MapPin, TrendingUp, Clock } from 'lucide-react';
-import { WalletConnect } from '@/components/WalletConnect';
+import { useCallback, useState } from 'react';
 import { TransactionHistory } from '@/components/TransactionHistory';
-import { truncatePublicKey, formatAmount } from '@/lib/stellar';
+import { WalletConnect } from '@/components/WalletConnect';
+import { truncatePublicKey } from '@/lib/stellar';
 import { SUPPORTED_COUNTRIES } from '@/types';
 
 // Worker page — a public payment history passport for a given Stellar address.

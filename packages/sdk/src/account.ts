@@ -1,6 +1,6 @@
 import { Keypair } from '@stellar/stellar-sdk';
-import { FRIENDBOT_URL, HORIZON_TESTNET_URL } from './types';
 import type { StellarKeypair } from './types';
+import { FRIENDBOT_URL, HORIZON_TESTNET_URL } from './types';
 
 /**
  * Generates a new random Stellar keypair.
@@ -21,16 +21,16 @@ export function createKeypair(): StellarKeypair {
  * @param publicKey - The G... public key of the account to fund
  * @returns The Friendbot response data
  */
-export async function fundTestnetAccount(publicKey: string): Promise<{ funded: boolean; publicKey: string }> {
+export async function fundTestnetAccount(
+  publicKey: string
+): Promise<{ funded: boolean; publicKey: string }> {
   const url = `${FRIENDBOT_URL}?addr=${encodeURIComponent(publicKey)}`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(
-      `Friendbot funding failed for ${publicKey}: HTTP ${response.status} — ${body}`
-    );
+    throw new Error(`Friendbot funding failed for ${publicKey}: HTTP ${response.status} — ${body}`);
   }
 
   await response.json();

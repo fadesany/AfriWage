@@ -35,7 +35,8 @@ const config: Config = {
       },
       backgroundImage: {
         'hero-gradient': 'linear-gradient(135deg, #0d1526 0%, #0f2044 50%, #0a1a38 100%)',
-        'card-gradient': 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+        'card-gradient':
+          'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
         'brand-gradient': 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)',
       },
       animation: {

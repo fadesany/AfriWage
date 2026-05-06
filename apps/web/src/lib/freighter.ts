@@ -50,7 +50,7 @@ export async function getPublicKey(): Promise<string> {
   }
 
   try {
-    const publicKey = await window.freighter!.getPublicKey();
+    const publicKey = await window.freighter?.getPublicKey();
     if (!publicKey) {
       throw new Error('No account found in Freighter. Please create or import a Stellar account.');
     }
@@ -74,7 +74,7 @@ export async function signTransaction(xdr: string): Promise<string> {
   }
 
   try {
-    const signedXdr = await window.freighter!.signTransaction(xdr, {
+    const signedXdr = await window.freighter?.signTransaction(xdr, {
       network: 'TESTNET',
       networkPassphrase: 'Test SDF Network ; September 2015',
     });
@@ -94,7 +94,7 @@ export async function isConnected(): Promise<boolean> {
   if (!isFreighterInstalled()) return false;
 
   try {
-    return await window.freighter!.isConnected();
+    return await window.freighter?.isConnected();
   } catch {
     return false;
   }
@@ -112,7 +112,7 @@ export async function getNetworkDetails(): Promise<{
     throw new Error('Freighter wallet is not installed.');
   }
 
-  const details = await window.freighter!.getNetworkDetails();
+  const details = await window.freighter?.getNetworkDetails();
   return {
     network: details.network,
     networkPassphrase: details.networkPassphrase,

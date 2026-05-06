@@ -1,18 +1,14 @@
 import {
-  Horizon,
-  TransactionBuilder,
-  Networks,
   Asset,
-  Operation,
+  Horizon,
   Keypair,
   Memo,
+  Networks,
+  Operation,
+  TransactionBuilder,
 } from '@stellar/stellar-sdk';
-import {
-  HORIZON_TESTNET_URL,
-  USDC_ASSET_CODE,
-  USDC_ISSUER_TESTNET,
-} from './types';
 import type { Balance, PaymentResult, TransactionRecord } from './types';
+import { HORIZON_TESTNET_URL, USDC_ASSET_CODE, USDC_ISSUER_TESTNET } from './types';
 
 const server = new Horizon.Server(HORIZON_TESTNET_URL);
 

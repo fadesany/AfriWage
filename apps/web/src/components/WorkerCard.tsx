@@ -1,11 +1,11 @@
 'use client';
 
-import { MapPin, Copy, CheckCircle, ExternalLink } from 'lucide-react';
-import { useState, useCallback } from 'react';
-import { truncatePublicKey, formatAmount } from '@/lib/stellar';
+import { CheckCircle, Copy, ExternalLink, MapPin } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { formatAmount, truncatePublicKey } from '@/lib/stellar';
 import { copyToClipboard } from '@/lib/utils';
-import { SUPPORTED_COUNTRIES } from '@/types';
 import type { Worker } from '@/types';
+import { SUPPORTED_COUNTRIES } from '@/types';
 
 interface WorkerCardProps {
   worker: Worker;
@@ -46,9 +46,7 @@ export function WorkerCard({ worker, onPay, className }: WorkerCardProps) {
           <div>
             <p className="font-semibold text-white">{worker.name}</p>
             <div className="mt-0.5 flex items-center gap-1.5">
-              {country && (
-                <span className="text-base leading-none">{country.flag}</span>
-              )}
+              {country && <span className="text-base leading-none">{country.flag}</span>}
               <div className="flex items-center gap-1 text-xs text-slate-400">
                 <MapPin className="h-3 w-3" />
                 {country?.name ?? worker.country}

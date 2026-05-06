@@ -1,26 +1,24 @@
 // @remitchain/sdk — Stellar helpers for instant USDC payroll
 // Re-export everything needed by consuming apps
 
-export { createKeypair, fundTestnetAccount, accountExists } from './account';
+export { accountExists, createKeypair, fundTestnetAccount } from './account';
 
 export {
-  sendPayment,
+  establishUsdcTrustline,
   getBalance,
   getTransactionHistory,
-  establishUsdcTrustline,
+  sendPayment,
 } from './payment';
-
+export type {
+  Balance,
+  PaymentResult,
+  SendPaymentParams,
+  StellarKeypair,
+  TransactionRecord,
+} from './types';
 export {
-  HORIZON_TESTNET_URL,
   FRIENDBOT_URL,
+  HORIZON_TESTNET_URL,
   USDC_ASSET_CODE,
   USDC_ISSUER_TESTNET,
-} from './types';
-
-export type {
-  StellarKeypair,
-  Balance,
-  TransactionRecord,
-  SendPaymentParams,
-  PaymentResult,
 } from './types';

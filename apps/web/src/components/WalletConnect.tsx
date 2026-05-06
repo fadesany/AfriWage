@@ -1,12 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Wallet, LogOut, Copy, CheckCircle, ExternalLink, AlertCircle } from 'lucide-react';
-import {
-  isFreighterInstalled,
-  getPublicKey,
-  isConnected,
-} from '@/lib/freighter';
+import { AlertCircle, CheckCircle, Copy, ExternalLink, LogOut, Wallet } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { getPublicKey, isConnected, isFreighterInstalled } from '@/lib/freighter';
 import { truncatePublicKey } from '@/lib/stellar';
 import { cn, copyToClipboard } from '@/lib/utils';
 import type { WalletStatus } from '@/types';
@@ -110,7 +106,11 @@ export function WalletConnect({ onConnect, onDisconnect, className }: WalletConn
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
                 aria-label={copied ? 'Copied!' : 'Copy address'}
               >
-                {copied ? <CheckCircle className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? (
+                  <CheckCircle className="h-3.5 w-3.5 text-green-400" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
                 {copied ? 'Copied!' : 'Copy'}
               </button>
 

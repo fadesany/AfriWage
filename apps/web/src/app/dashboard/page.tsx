@@ -1,24 +1,23 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
-  Wallet,
-  TrendingUp,
+  AlertCircle,
   ArrowUpRight,
   Home,
-  Send,
-  Users,
   RefreshCw,
-  AlertCircle,
-  Loader2,
+  Send,
+  TrendingUp,
+  Users,
+  Wallet,
 } from 'lucide-react';
-import { WalletConnect } from '@/components/WalletConnect';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import { SendPaymentForm } from '@/components/SendPaymentForm';
 import { TransactionHistory } from '@/components/TransactionHistory';
-import { getBalance, formatAmount } from '@/lib/stellar';
+import { WalletConnect } from '@/components/WalletConnect';
 import type { Balance } from '@/lib/stellar';
+import { formatAmount, getBalance } from '@/lib/stellar';
 
 function BalanceCard({
   label,
@@ -48,7 +47,7 @@ function BalanceCard({
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const _router = useRouter();
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
@@ -88,7 +87,7 @@ export default function DashboardPage() {
       // This is handled via WalletConnect's auto-connect logic
     }, 2000);
     return () => clearTimeout(timer);
-  }, [router]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-hero-gradient">
@@ -176,14 +175,12 @@ export default function DashboardPage() {
             {/* Balance cards */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {balanceLoading ? (
-                <>
-                  {[...Array(2)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-36 animate-pulse rounded-2xl border border-white/10 bg-white/5"
-                    />
-                  ))}
-                </>
+                [...Array(2)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-36 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+                  />
+                ))
               ) : balanceError ? (
                 <div className="col-span-full flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
                   <AlertCircle className="h-5 w-5 shrink-0" />

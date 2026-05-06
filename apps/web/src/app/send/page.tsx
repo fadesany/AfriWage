@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import Link from 'next/link';
 import { Home, Send as SendIcon } from 'lucide-react';
-import { WalletConnect } from '@/components/WalletConnect';
+import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import { SendPaymentForm } from '@/components/SendPaymentForm';
+import { WalletConnect } from '@/components/WalletConnect';
 
 export default function SendPage() {
   const [publicKey, setPublicKey] = useState<string | null>(null);
@@ -42,10 +42,7 @@ export default function SendPage() {
             Instantly send USDC to any Stellar address on the testnet
           </p>
         </div>
-        <SendPaymentForm
-          senderPublicKey={publicKey ?? undefined}
-          senderSecret={undefined}
-        />
+        <SendPaymentForm senderPublicKey={publicKey ?? undefined} senderSecret={undefined} />
       </main>
     </div>
   );

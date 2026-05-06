@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { ArrowUpRight, ArrowDownLeft, RefreshCw, ExternalLink, Clock } from 'lucide-react';
-import { getTransactionHistory } from '@/lib/stellar';
-import { formatDate, cn } from '@/lib/utils';
+import { ArrowDownLeft, ArrowUpRight, Clock, ExternalLink, RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import type { TransactionRecord } from '@/lib/stellar';
+import { getTransactionHistory } from '@/lib/stellar';
+import { cn, formatDate } from '@/lib/utils';
 
 interface TransactionHistoryProps {
   publicKey: string;
@@ -59,8 +59,7 @@ export function TransactionHistory({ publicKey, className }: TransactionHistoryP
         const txs = await getTransactionHistory(publicKey);
         setTransactions(txs);
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Failed to load transaction history';
+        const message = err instanceof Error ? err.message : 'Failed to load transaction history';
         setError(message);
       } finally {
         setLoading(false);
@@ -118,8 +117,8 @@ export function TransactionHistory({ publicKey, className }: TransactionHistoryP
                     !tx.successful
                       ? 'bg-red-500/20 text-red-400'
                       : incoming
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-blue-500/20 text-blue-400'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-blue-500/20 text-blue-400'
                   )}
                 >
                   {isPayment && incoming ? (
@@ -136,10 +135,10 @@ export function TransactionHistory({ publicKey, className }: TransactionHistoryP
                       {isCreateAccount
                         ? 'Account Created'
                         : isPayment
-                        ? incoming
-                          ? 'Received'
-                          : 'Sent'
-                        : 'Transaction'}
+                          ? incoming
+                            ? 'Received'
+                            : 'Sent'
+                          : 'Transaction'}
                     </p>
                     {!tx.successful && (
                       <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs text-red-400">
@@ -162,14 +161,11 @@ export function TransactionHistory({ publicKey, className }: TransactionHistoryP
                   <p
                     className={cn(
                       'text-sm font-semibold',
-                      !tx.successful
-                        ? 'text-red-400'
-                        : incoming
-                        ? 'text-green-400'
-                        : 'text-white'
+                      !tx.successful ? 'text-red-400' : incoming ? 'text-green-400' : 'text-white'
                     )}
                   >
-                    {incoming ? '+' : '-'}{tx.amount} {tx.asset}
+                    {incoming ? '+' : '-'}
+                    {tx.amount} {tx.asset}
                   </p>
                   <a
                     href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`}

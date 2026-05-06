@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
 import { StrKey } from '@stellar/stellar-sdk';
-import { Send, Loader2, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ExternalLink, Loader2, Send } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { sendPayment } from '@/lib/stellar';
 import { cn } from '@/lib/utils';
 
@@ -90,7 +90,9 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
             <CheckCircle2 className="h-6 w-6 shrink-0 text-green-400" />
             <div>
               <p className="font-semibold text-green-400">Payment Sent Successfully!</p>
-              <p className="text-sm text-slate-400">Your USDC has been delivered on the Stellar network.</p>
+              <p className="text-sm text-slate-400">
+                Your USDC has been delivered on the Stellar network.
+              </p>
             </div>
           </div>
 
@@ -149,7 +151,11 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
               aria-invalid={!!errors.recipientPublicKey}
             />
             {errors.recipientPublicKey && (
-              <p id="recipient-error" className="flex items-center gap-1.5 text-xs text-red-400" role="alert">
+              <p
+                id="recipient-error"
+                className="flex items-center gap-1.5 text-xs text-red-400"
+                role="alert"
+              >
                 <AlertCircle className="h-3.5 w-3.5" />
                 {errors.recipientPublicKey.message}
               </p>
@@ -190,7 +196,11 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
               </span>
             </div>
             {errors.amount && (
-              <p id="amount-error" className="flex items-center gap-1.5 text-xs text-red-400" role="alert">
+              <p
+                id="amount-error"
+                className="flex items-center gap-1.5 text-xs text-red-400"
+                role="alert"
+              >
                 <AlertCircle className="h-3.5 w-3.5" />
                 {errors.amount.message}
               </p>
@@ -200,8 +210,7 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
           {/* Memo (optional) */}
           <div className="space-y-1.5">
             <label htmlFor="memo" className="block text-sm font-medium text-slate-300">
-              Memo{' '}
-              <span className="text-slate-500">(optional, max 28 chars)</span>
+              Memo <span className="text-slate-500">(optional, max 28 chars)</span>
             </label>
             <input
               id="memo"
@@ -226,7 +235,10 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
 
           {/* Error display */}
           {status === 'error' && errorMessage && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4" role="alert">
+            <div
+              className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4"
+              role="alert"
+            >
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
               <p className="text-sm text-red-300">{errorMessage}</p>
             </div>
@@ -246,8 +258,8 @@ export function SendPaymentForm({ senderSecret, className }: SendPaymentFormProp
               !senderSecret
                 ? 'Connect wallet to send payment'
                 : status === 'loading'
-                ? 'Processing payment...'
-                : 'Send USDC payment'
+                  ? 'Processing payment...'
+                  : 'Send USDC payment'
             }
           >
             {status === 'loading' ? (

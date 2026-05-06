@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
 import {
-  Zap,
+  ArrowRight,
+  CheckCircle,
+  DollarSign,
+  Github,
   Globe2,
   Shield,
-  ArrowRight,
-  Github,
-  CheckCircle,
   Users,
-  DollarSign,
+  Zap,
 } from 'lucide-react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'RemitChain — Instant, Borderless Payroll for African Gig Workers',
@@ -125,8 +125,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
-            Instant Payroll for{' '}
-            <span className="text-gradient">African Gig Workers</span>
+            Instant Payroll for <span className="text-gradient">African Gig Workers</span>
           </h1>
 
           <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-slate-400 md:text-xl">
@@ -180,7 +179,7 @@ export default function HomePage() {
           </p>
           <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-6 font-mono text-sm text-slate-300">
             <pre className="whitespace-pre text-left leading-loose">
-{`[Employer Wallet]
+              {`[Employer Wallet]
        │
        │  USDC payment (Stellar testnet)
        ▼
