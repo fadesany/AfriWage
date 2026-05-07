@@ -1,15 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@remitchain/sdk'],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Stellar SDK uses Node.js built-ins that need to be polyfilled for browser
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       net: false,
       tls: false,
-      crypto: false,
     };
+
+    // Fix "Critical dependency: require function is used in a way in which dependencies cannot be statically extracted"
+    // and "Module not found: Can't resolve 'sodium-native'"
+    if (!isServer) {
+      config.resolve.fallback.crypto = false;
+    }
+
     return config;
   },
   experimental: {
