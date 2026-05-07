@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { SendPaymentForm } from '@/components/SendPaymentForm';
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { WalletConnect } from '@/components/WalletConnect';
