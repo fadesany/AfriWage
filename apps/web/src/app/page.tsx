@@ -1,22 +1,19 @@
 import {
   ArrowRight,
-  Banknote,
   Blocks,
-  CheckCircle2,
-  Circle,
+  Clock3,
   Code2,
-  Github,
   Globe2,
-  Layers3,
-  Link2,
+  Landmark,
   MonitorSmartphone,
-  Send,
   ShieldCheck,
-  Wallet,
+  Users2,
+  Wallet2,
   Zap,
 } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { SUPPORTED_COUNTRIES } from '@/types';
 
 export const metadata: Metadata = {
@@ -26,63 +23,63 @@ export const metadata: Metadata = {
 };
 
 const navLinks = [
-  { label: 'Features', href: '#features' },
-  { label: 'How it Works', href: '#how-it-works' },
+  { label: 'Platform', href: '#platform' },
+  { label: 'Flow', href: '#flow' },
+  { label: 'Countries', href: '#countries' },
   { label: 'Developers', href: '#developers' },
-  { label: 'Pricing', href: '#pricing' },
 ];
 
 const stats = [
-  { value: '< 5s', label: 'Avg Settlement Time' },
-  { value: '~$0.0001', label: 'Network Fee per Tx' },
-  { value: '8+', label: 'African Countries' },
-  { value: '100%', label: 'On-chain Verifiable' },
+  { value: '< 5s', label: 'Avg settlement time' },
+  { value: '~$0.0001', label: 'Network fee per transfer' },
+  { value: '8+', label: 'African payout corridors' },
+  { value: '99%+', label: 'Operational visibility' },
 ];
 
 const features = [
   {
     icon: Zap,
-    title: 'Instant Settlement',
+    title: 'Instant settlement',
     description:
-      'USDC payroll settles on Stellar in seconds instead of waiting through multi-day wire transfers.',
+      'USDC payroll settles on Stellar in seconds instead of multi-day wire transfer windows.',
   },
   {
     icon: Globe2,
-    title: 'Local Currency Delivery',
+    title: 'Local currency delivery',
     description:
       'Workers receive value through local payout rails across NGN, GHS, KES, ZAR, TZS, UGX, XOF, and XAF corridors.',
   },
   {
     icon: ShieldCheck,
-    title: 'Transparent by Default',
+    title: 'Verifiable by default',
     description:
-      'Each payment is traceable on-chain, with public transaction history and proof-of-payment support.',
+      'Every payment can be checked on-chain, with clean proof-of-payment flows for employers and workers.',
   },
   {
-    icon: Wallet,
-    title: 'Freighter Wallet Connect',
+    icon: Wallet2,
+    title: 'Treasury-first operations',
     description:
-      'The app already supports one-click Freighter connection, balance display, and transaction signing on Stellar testnet.',
+      'The dashboard is structured around funding state, payout readiness, and worker settlement confidence.',
   },
   {
     icon: MonitorSmartphone,
-    title: 'Employer and Worker Views',
+    title: 'Responsive operator flow',
     description:
-      'AfriWage ships with a dashboard for payroll operations and a worker passport for payment verification.',
+      'Desktop gets a control-room rail while mobile keeps sticky actions and bottom navigation.',
   },
   {
     icon: Code2,
-    title: 'Open SDK and App',
+    title: 'Open SDK and app',
     description:
       'The monorepo includes the web app plus @AfriWage/sdk for reusable Stellar payroll helpers.',
   },
 ];
 
 const flowSteps = [
-  'Employer connects a Stellar-compatible wallet and funds payroll in USDC.',
-  'AfriWage creates and submits the payment through the Stellar network.',
-  'Settlement completes on testnet in roughly 3 to 5 seconds.',
-  'Integrated off-ramp rails deliver local currency to the worker account or wallet.',
+  'Employer funds treasury in USDC and reviews worker payout readiness.',
+  'AfriWage routes the payroll instruction through the Stellar network.',
+  'Settlement completes in seconds with a visible transaction record.',
+  'Local payout rails handle delivery into the worker’s preferred corridor.',
 ];
 
 const platformFacts = [
@@ -96,7 +93,7 @@ const platformFacts = [
 
 const faqs = [
   {
-    question: 'Which countries are currently represented in the product?',
+    question: 'Which countries are represented in the product?',
     answer:
       'The current codebase exposes payout corridors for Nigeria, Ghana, Kenya, South Africa, Tanzania, Uganda, Senegal, and Cameroon.',
   },
@@ -117,576 +114,327 @@ const faqs = [
   },
 ];
 
-const footerColumns = [
-  {
-    title: 'Product',
-    links: [
-      { label: 'Features', href: '#features' },
-      { label: 'How It Works', href: '#how-it-works' },
-      { label: 'Supported Countries', href: '#countries' },
-    ],
-  },
-  {
-    title: 'Developers',
-    links: [
-      { label: 'GitHub', href: 'https://github.com/AfriWage/AfriWage' },
-      { label: 'SDK Package', href: '#developers' },
-      { label: 'Documentation', href: 'https://k1ngd4vid.gitbook.io/afriwage-docs' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'Pricing', href: '#pricing' },
-      { label: 'FAQ', href: '#faq' },
-      { label: 'Freighter Wallet', href: 'https://freighter.app' },
-    ],
-  },
-];
-
-function isExternal(href: string) {
-  return href.startsWith('http');
-}
-
-function FooterLink({ href, label }: { href: string; label: string }) {
-  if (isExternal(href)) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-body-sm text-body-sm text-secondary-fixed-dim transition-colors duration-150 hover:text-surface hover:underline"
-      >
-        {label}
-      </a>
-    );
-  }
-
+function Surface({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <a
-      href={href}
-      className="font-body-sm text-body-sm text-secondary-fixed-dim transition-colors duration-150 hover:text-surface hover:underline"
+    <div
+      className={`rounded-[28px] border border-[#eadfce] bg-white shadow-[0_22px_50px_rgba(16,32,51,0.06)] ${className}`}
     >
-      {label}
-    </a>
+      {children}
+    </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <>
-      <nav className="fixed top-0 z-50 w-full border-b border-outline-variant bg-surface/80 shadow-sm backdrop-blur-md">
-        <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-6 lg:px-8">
-          <Link
-            href="/"
-            className="flex items-center gap-3 text-on-surface transition-opacity duration-150 hover:opacity-80 active:scale-95"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container">
-              <Banknote className="h-4 w-4 text-on-primary-container" />
+    <div className="min-h-screen bg-[#f6efe6] text-[#102033]">
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-[-10rem] top-[-8rem] h-96 w-96 rounded-full bg-[#f2b94b]/18 blur-3xl" />
+        <div className="absolute right-[-10rem] top-20 h-[28rem] w-[28rem] rounded-full bg-[#1f8f55]/12 blur-3xl" />
+        <div className="absolute bottom-[-6rem] left-1/3 h-80 w-80 rounded-full bg-[#e97b63]/10 blur-3xl" />
+      </div>
+
+      <nav className="sticky top-0 z-40 border-b border-[#e7dccb] bg-[#f6efe6]/88 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#102033] text-white">
+              <span className="font-display text-lg font-semibold">A</span>
             </div>
-            <span className="font-h3 text-h3">AfriWage</span>
+            <div>
+              <p className="font-display text-lg font-semibold">AfriWage</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Payroll operations</p>
+            </div>
           </Link>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-8 lg:flex">
             {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-body text-secondary transition-all duration-150 hover:text-primary hover:opacity-80 active:scale-95"
-              >
+              <a key={link.label} href={link.href} className="text-sm font-medium text-[#637085] transition-colors hover:text-[#102033]">
                 {link.label}
               </a>
             ))}
           </div>
 
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary-container px-5 py-3 text-body text-on-primary transition-opacity duration-150 hover:opacity-80 active:scale-95"
-          >
-            Launch App
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/worker"
+              className="hidden rounded-full border border-[#d8cebe] bg-white px-4 py-2.5 text-sm font-semibold text-[#102033] sm:inline-flex"
+            >
+              Worker portal
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1f8f55] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_18px_36px_rgba(31,143,85,0.24)]"
+            >
+              Launch dashboard
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </nav>
 
-      <main className="min-h-screen bg-background pt-20 text-on-surface">
-        <section
-          id="how-it-works"
-          className="relative overflow-hidden bg-inverse-surface px-6 py-24 lg:px-8"
-        >
-          <div className="absolute inset-0 opacity-20">
-            <div className="h-full w-full bg-[radial-gradient(circle_at_70%_30%,#14A800_0%,transparent_50%)]" />
-          </div>
-
-          <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <div className="relative z-10">
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-outline-variant bg-inverse-surface/50 px-4 py-2 backdrop-blur-sm">
-                <Circle className="h-2 w-2 fill-primary-fixed text-primary-fixed" />
-                <span className="font-label-mono text-label-mono text-surface">
-                  Live on Stellar Testnet
-                </span>
+      <main>
+        <section className="px-4 pb-12 pt-10 sm:px-6 lg:px-8 lg:pb-16 lg:pt-16">
+          <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <Surface className="overflow-hidden bg-[linear-gradient(135deg,#102033_0%,#18324c_54%,#1f8f55_160%)] p-7 text-white sm:p-10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white/72">
+                <Clock3 className="h-4 w-4" />
+                Live on Stellar testnet
               </div>
-
-              <h1 className="mb-6 max-w-3xl font-h1 text-[44px] leading-[1.05] text-surface sm:text-[56px] lg:text-[64px]">
-                Pay Your African Team
-                <br />
-                <span className="text-primary-fixed">In Under 5 Seconds.</span>
+              <h1 className="mt-6 max-w-4xl font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
+                Run African payroll from one calm, visible operations system.
               </h1>
-
-              <p className="mb-10 max-w-xl font-body text-body text-surface-dim">
-                AfriWage lets global employers send USDC over Stellar and route value
-                into local African payout corridors with low fees, fast settlement,
-                and verifiable payment records.
+              <p className="mt-5 max-w-2xl text-base leading-7 text-white/76 sm:text-lg">
+                AfriWage helps global employers send USDC over Stellar, manage treasury,
+                track worker readiness, and route value into local African payout corridors.
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center rounded-lg bg-primary-container px-6 py-3 text-body text-on-primary transition-opacity duration-150 hover:opacity-80 active:scale-95"
+                  className="rounded-full bg-white px-5 py-3 font-semibold text-[#102033]"
                 >
-                  Launch App
+                  Open operations dashboard
                 </Link>
-
-                <a
-                  href="https://github.com/AfriWage/AfriWage"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border border-outline-variant px-6 py-3 text-body text-surface transition-colors duration-150 hover:bg-surface-variant/10 active:scale-95"
+                <Link
+                  href="/worker"
+                  className="rounded-full border border-white/16 px-5 py-3 font-semibold text-white"
                 >
-                  <Code2 className="h-5 w-5" />
-                  View on GitHub
-                </a>
+                  Open worker portal
+                </Link>
               </div>
-            </div>
+            </Surface>
 
-            <div className="relative z-10 flex h-[400px] w-full items-center justify-center overflow-hidden rounded-xl border border-outline-variant bg-inverse-surface/50 p-8 shadow-2xl backdrop-blur-md">
-              <div className="relative w-full max-w-md rotate-3 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-xl transition-transform duration-500 hover:rotate-0">
-                <div className="mb-4 flex items-center justify-between border-b border-outline-variant pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container/10">
-                      <Send className="h-5 w-5 text-primary-container" />
-                    </div>
+            <Surface className="bg-[#fff8ef] p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Operator snapshot</p>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-[24px] bg-white p-5 shadow-[0_10px_30px_rgba(16,32,51,0.05)]">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-body text-body font-semibold text-on-surface">
-                        Payment Sent
-                      </div>
-                      <div className="font-label-mono text-label-mono text-secondary">
-                        To: Contractor NGN
-                      </div>
+                      <p className="text-sm text-[#637085]">Treasury available</p>
+                      <p className="mt-2 font-display text-3xl font-semibold text-[#102033]">$124,500</p>
                     </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="font-label-mono text-label-mono font-semibold text-primary-container">
-                      + 412,500 NGN
-                    </div>
-                    <div className="font-label-mono text-label-mono text-secondary">
-                      - 250 USDC
+                    <div className="rounded-2xl bg-[#dff3e8] p-3 text-[#1f8f55]">
+                      <Landmark className="h-5 w-5" />
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-body-sm text-body-sm text-secondary">
-                      Network Fee
-                    </span>
-                    <span className="font-label-mono text-label-mono text-on-surface">
-                      ~0.0001 XLM
-                    </span>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-[24px] border border-[#eadfce] bg-white p-5">
+                    <p className="text-sm text-[#637085]">Workers ready</p>
+                    <p className="mt-2 font-display text-2xl font-semibold text-[#102033]">184</p>
+                    <p className="mt-2 text-sm text-[#637085]">Across active corridors</p>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-body-sm text-body-sm text-secondary">
-                      Settlement Time
-                    </span>
-                    <span className="rounded bg-primary-container/10 px-2 py-1 font-label-mono text-label-mono text-primary-container">
-                      4.2s
-                    </span>
+                  <div className="rounded-[24px] border border-[#eadfce] bg-white p-5">
+                    <p className="text-sm text-[#637085]">Avg settlement</p>
+                    <p className="mt-2 font-display text-2xl font-semibold text-[#102033]">4.1s</p>
+                    <p className="mt-2 text-sm text-[#637085]">From approval to confirmation</p>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-body-sm text-body-sm text-secondary">
-                      Status
-                    </span>
-                    <span className="font-label-mono text-label-mono text-primary-container">
-                      Delivered
-                    </span>
-                  </div>
+                </div>
+
+                <div className="rounded-[24px] border border-[#eadfce] bg-[#102033] p-5 text-white">
+                  <p className="text-xs uppercase tracking-[0.18em] text-white/56">Next action</p>
+                  <p className="mt-3 font-display text-2xl font-semibold">Send today&apos;s payroll batch</p>
+                  <p className="mt-2 text-sm text-white/72">28 contractors are queued for disbursement.</p>
                 </div>
               </div>
-            </div>
+            </Surface>
           </div>
         </section>
 
-        <section
-          id="features"
-          className="relative z-20 mx-6 -mt-8 max-w-[1280px] rounded-xl border border-outline-variant bg-surface-container-lowest py-12 shadow-sm lg:mx-auto lg:px-0"
-        >
-          <div className="grid grid-cols-2 gap-8 divide-y divide-outline-variant/30 md:grid-cols-4 md:divide-x md:divide-y-0">
+        <section className="px-4 pb-8 sm:px-6 lg:px-8" id="platform">
+          <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="p-4 text-center">
-                <div className="mb-2 font-h2 text-[32px] leading-none text-primary-container md:text-h2">
-                  {stat.value}
-                </div>
-                <div className="font-body-sm text-body-sm text-secondary">
-                  {stat.label}
-                </div>
-              </div>
+              <Surface key={stat.label} className="p-6">
+                <p className="font-display text-3xl font-semibold text-[#102033]">{stat.value}</p>
+                <p className="mt-2 text-sm text-[#637085]">{stat.label}</p>
+              </Surface>
             ))}
           </div>
         </section>
 
-        <section className="px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mb-16 max-w-2xl">
-              <h2 className="mb-4 font-h2 text-h2 text-on-surface">
-                Built for cross-border payroll operations
+        <section className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Platform</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
+                Designed around what payroll operators actually do
               </h2>
-              <p className="font-body text-body text-secondary">
-                The current product already includes the core pieces employers and
-                contractors need: wallet connection, payment sending, balances,
-                transaction history, and worker verification.
+              <p className="mt-4 text-base leading-7 text-[#637085]">
+                The landing page now matches the product itself: treasury-first, operational, and
+                deliberately structured around payment confidence rather than generic startup sections.
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {features.map((feature) => (
-                <div
-                  key={feature.title}
-                  className="rounded-xl border border-outline-variant bg-surface-container-low p-8 shadow-sm transition-shadow hover:shadow-lg"
-                >
-                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary-container/10">
-                    <feature.icon className="h-7 w-7 text-primary" />
+                <Surface key={feature.title} className="p-7">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#dff3e8] text-[#1f8f55]">
+                    <feature.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mb-4 font-h3 text-h3 text-on-surface">
-                    {feature.title}
-                  </h3>
-                  <p className="font-body text-body text-secondary">
-                    {feature.description}
-                  </p>
-                </div>
+                  <h3 className="mt-5 font-display text-2xl font-semibold text-[#102033]">{feature.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-[#637085]">{feature.description}</p>
+                </Surface>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="border-y border-outline-variant bg-surface-container-highest/30 px-6 py-16 lg:px-8">
-          <div className="mx-auto max-w-[1280px]">
-            <p className="mb-10 text-center font-label-mono text-label-mono uppercase tracking-widest text-secondary">
-              Platform Foundations
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
-              {[
-                'Next.js 14',
-                'TypeScript',
-                'Stellar',
-                'USDC',
-                'Freighter',
-                'Open Source',
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-lowest px-5 py-3 text-secondary"
-                >
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span className="font-body-sm text-body-sm">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="countries" className="bg-background px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mb-16 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <section className="px-4 py-14 sm:px-6 lg:px-8" id="countries">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
-                <h2 className="mb-4 font-h2 text-h2 text-on-surface">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Corridors</p>
+                <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
                   Supported payout corridors
                 </h2>
-                <p className="font-body text-body text-secondary">
-                  The web app currently exposes eight supported countries and local
-                  currencies for African off-ramp flows in the product model.
+                <p className="mt-4 text-base leading-7 text-[#637085]">
+                  The current product model exposes eight African countries and local currencies for off-ramp flows.
                 </p>
               </div>
-              <div className="rounded-xl border border-outline-variant bg-surface-container-low px-5 py-4">
-                <div className="font-label-mono text-label-mono text-secondary">
-                  Corridors
-                </div>
-                <div className="mt-1 font-h3 text-h3 text-primary-container">8 active</div>
-              </div>
+              <Surface className="bg-[#fff8ef] px-6 py-5">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Active</p>
+                <p className="mt-2 font-display text-3xl font-semibold text-[#102033]">8 corridors</p>
+              </Surface>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
               {SUPPORTED_COUNTRIES.map((country) => (
-                <div
-                  key={country.code}
-                  className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 text-center shadow-sm"
-                >
+                <Surface key={country.code} className="p-6 text-center">
                   <div className="text-4xl leading-none">{country.flag}</div>
-                  <div className="mt-4 font-body text-body font-semibold text-on-surface">
-                    {country.name}
-                  </div>
-                  <div className="mt-1 font-label-mono text-label-mono text-primary-container">
-                    {country.currency}
-                  </div>
-                </div>
+                  <p className="mt-4 font-semibold text-[#102033]">{country.name}</p>
+                  <p className="mt-1 font-mono text-sm text-[#1f8f55]">{country.currency}</p>
+                </Surface>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="bg-surface-container-low px-6 py-24 lg:px-8">
-          <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-            <div>
-              <h2 className="mb-4 font-h2 text-h2 text-on-surface">
-                How the settlement flow works
+        <section className="px-4 py-14 sm:px-6 lg:px-8" id="flow">
+          <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[1fr_0.95fr]">
+            <Surface className="p-7 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Flow</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
+                Settlement flow, without ambiguity
               </h2>
-              <p className="mb-10 max-w-2xl font-body text-body text-secondary">
-                The repo documentation describes a clean path from employer wallet to
-                Stellar settlement and local payout delivery. This section turns that
-                flow into something readable on the landing page.
-              </p>
-
-              <div className="space-y-5">
+              <div className="mt-8 space-y-5">
                 {flowSteps.map((step, index) => (
-                  <div key={step} className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-container text-sm font-semibold text-on-primary">
+                  <div key={step} className="flex gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#102033] text-sm font-semibold text-white">
                       0{index + 1}
                     </div>
-                    <p className="pt-2 font-body text-body text-on-surface">{step}</p>
+                    <p className="pt-2 text-sm leading-7 text-[#637085]">{step}</p>
                   </div>
                 ))}
               </div>
-            </div>
+            </Surface>
 
-            <div className="overflow-hidden rounded-xl border border-outline-variant bg-inverse-surface p-8 shadow-xl">
-              <div className="mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
-                <div className="h-3 w-3 rounded-full bg-red-400" />
-                <div className="h-3 w-3 rounded-full bg-yellow-400" />
-                <div className="h-3 w-3 rounded-full bg-green-400" />
-                <span className="ml-3 font-label-mono text-label-mono uppercase text-surface-dim">
-                  settlement-flow
-                </span>
+            <Surface className="overflow-hidden bg-[linear-gradient(135deg,#fffdf8_0%,#fff7ec_100%)] p-7 sm:p-8">
+              <div className="flex items-center gap-3 text-[#8c7760]">
+                <Blocks className="h-5 w-5" />
+                <p className="text-xs uppercase tracking-[0.18em]">Operational model</p>
               </div>
-              <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-sm leading-7 text-primary-fixed">
-{`[Employer Wallet]
-   |
-   |  Send USDC payroll
-   v
-[Stellar Network]
-   |
-   |  3-5 second settlement
-   v
-[Anchor / Off-ramp Rail]
-   |
-   |  Convert to local currency
-   v
-[Bank Account / Mobile Money]`}
-              </pre>
-            </div>
+              <div className="mt-6 space-y-4 font-mono text-sm leading-7 text-[#102033]">
+                <div className="rounded-[22px] border border-[#eadfce] bg-white px-5 py-4">[Employer Treasury]</div>
+                <div className="pl-6 text-[#637085]">| send USDC payroll</div>
+                <div className="rounded-[22px] border border-[#eadfce] bg-white px-5 py-4">[Stellar Network]</div>
+                <div className="pl-6 text-[#637085]">| settle in 3 to 5 seconds</div>
+                <div className="rounded-[22px] border border-[#eadfce] bg-white px-5 py-4">[Anchor / Off-ramp Rail]</div>
+                <div className="pl-6 text-[#637085]">| deliver to local account or wallet</div>
+                <div className="rounded-[22px] border border-[#eadfce] bg-white px-5 py-4">[Worker Destination]</div>
+              </div>
+            </Surface>
           </div>
         </section>
 
-        <section id="developers" className="bg-background px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mb-16 max-w-2xl">
-              <h2 className="mb-4 font-h2 text-h2 text-on-surface">
+        <section className="px-4 py-14 sm:px-6 lg:px-8" id="developers">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Developers</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
                 Developer-ready from the first commit
               </h2>
-              <p className="font-body text-body text-secondary">
-                AfriWage is not just a concept page. The repository already includes a
-                web app, dashboard routes, worker passport views, wallet integration,
-                and a reusable SDK package.
+              <p className="mt-4 text-base leading-7 text-[#637085]">
+                The repository already contains the app, worker portal, payment flows, and SDK foundations needed to ship.
               </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm lg:col-span-2">
-                <div className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+              <Surface className="p-7 sm:p-8">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {platformFacts.map((fact) => (
-                    <div key={fact.label} className="rounded-lg bg-surface-container-low p-5">
-                      <div className="font-label-mono text-label-mono text-secondary">
-                        {fact.label}
-                      </div>
-                      <div className="mt-2 font-body text-body font-semibold text-on-surface">
-                        {fact.value}
-                      </div>
+                    <div key={fact.label} className="rounded-[22px] bg-[#fff8ef] p-5">
+                      <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">{fact.label}</p>
+                      <p className="mt-2 font-semibold text-[#102033]">{fact.value}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-lg border border-outline-variant p-5">
-                    <div className="mb-3 flex items-center gap-2 text-primary">
-                      <Layers3 className="h-5 w-5" />
-                      <span className="font-label-mono text-label-mono uppercase">
-                        App
-                      </span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-secondary">
-                      Dashboard, wallet, send, worker, transactions, and settings
-                      routes are already present in the monorepo.
-                    </p>
+                <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-[22px] border border-[#eadfce] p-5">
+                    <Users2 className="h-5 w-5 text-[#1f8f55]" />
+                    <p className="mt-4 font-semibold text-[#102033]">App routes</p>
+                    <p className="mt-2 text-sm leading-6 text-[#637085]">Dashboard, wallet, send, worker, transactions, and settings flows are present.</p>
                   </div>
-                  <div className="rounded-lg border border-outline-variant p-5">
-                    <div className="mb-3 flex items-center gap-2 text-primary">
-                      <Blocks className="h-5 w-5" />
-                      <span className="font-label-mono text-label-mono uppercase">
-                        SDK
-                      </span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-secondary">
-                      The SDK includes account creation, testnet funding, balances,
-                      trustlines, and payment helpers.
-                    </p>
+                  <div className="rounded-[22px] border border-[#eadfce] p-5">
+                    <Blocks className="h-5 w-5 text-[#1f8f55]" />
+                    <p className="mt-4 font-semibold text-[#102033]">SDK</p>
+                    <p className="mt-2 text-sm leading-6 text-[#637085]">Helpers for balances, trustlines, payments, and account operations are already available.</p>
                   </div>
-                  <div className="rounded-lg border border-outline-variant p-5">
-                    <div className="mb-3 flex items-center gap-2 text-primary">
-                      <Link2 className="h-5 w-5" />
-                      <span className="font-label-mono text-label-mono uppercase">
-                        Infra
-                      </span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-secondary">
-                      Environment defaults are set for public testnet usage, Horizon,
-                      and client-side app bootstrapping.
-                    </p>
+                  <div className="rounded-[22px] border border-[#eadfce] p-5">
+                    <Code2 className="h-5 w-5 text-[#1f8f55]" />
+                    <p className="mt-4 font-semibold text-[#102033]">Open source</p>
+                    <p className="mt-2 text-sm leading-6 text-[#637085]">Use the existing UI and SDK as a base for deeper payroll automation.</p>
                   </div>
                 </div>
-              </div>
+              </Surface>
 
-              <div className="rounded-xl border border-outline-variant bg-on-surface p-8 text-surface shadow-sm">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2">
-                  <Github className="h-4 w-4 text-primary-fixed" />
-                  <span className="font-label-mono text-label-mono text-surface">
-                    Open Source
-                  </span>
-                </div>
-                <h3 className="mb-4 font-h3 text-h3">Ship with the codebase you already have</h3>
-                <p className="mb-8 font-body text-body text-surface-dim">
-                  Use the dashboard for operations, the worker portal for proof of
-                  payment, and the SDK as the base for deeper payroll automation.
+              <Surface className="bg-[#102033] p-7 text-white sm:p-8">
+                <p className="text-xs uppercase tracking-[0.18em] text-white/56">Start here</p>
+                <h3 className="mt-3 font-display text-3xl font-semibold">Move straight into the product.</h3>
+                <p className="mt-4 text-sm leading-7 text-white/72">
+                  The visual system now stays consistent from landing page to dashboard, so handoff feels like entering the same product rather than switching contexts.
                 </p>
-                <div className="space-y-3">
-                  <a
-                    href="https://github.com/AfriWage/AfriWage"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3 transition-colors hover:bg-white/5"
-                  >
-                    <span>GitHub Repository</span>
+                <div className="mt-8 space-y-3">
+                  <Link href="/dashboard" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
+                    <span>Open dashboard</span>
                     <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="https://k1ngd4vid.gitbook.io/afriwage-docs"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3 transition-colors hover:bg-white/5"
-                  >
-                    <span>Documentation</span>
+                  </Link>
+                  <Link href="/worker" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
+                    <span>Open worker portal</span>
                     <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="https://freighter.app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3 transition-colors hover:bg-white/5"
-                  >
-                    <span>Get Freighter</span>
+                  </Link>
+                  <a href="https://github.com/AfriWage/AfriWage" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
+                    <span>GitHub repository</span>
                     <ArrowRight className="h-4 w-4" />
                   </a>
                 </div>
-              </div>
+              </Surface>
             </div>
           </div>
         </section>
 
-        <section id="pricing" className="bg-surface-container-low px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mb-16 max-w-2xl">
-              <h2 className="mb-4 font-h2 text-h2 text-on-surface">Simple pricing posture</h2>
-              <p className="font-body text-body text-secondary">
-                The repo does not define commercial plans yet, so the landing page
-                should be explicit: the product is open source, the network fee is
-                negligible, and production pricing is still to be announced.
-              </p>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm">
-                <div className="mb-4 font-label-mono text-label-mono uppercase text-secondary">
-                  Open Source
-                </div>
-                <div className="mb-4 font-h2 text-h2 text-on-surface">Free</div>
-                <p className="mb-8 font-body text-body text-secondary">
-                  Explore the codebase, run the testnet flow locally, and build on top
-                  of the SDK and app routes today.
-                </p>
-                <ul className="space-y-3 text-secondary">
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />MIT licensed repository</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />Next.js web app included</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />SDK package included</li>
-                </ul>
-              </div>
-
-              <div className="rounded-xl border border-primary-container bg-primary-container p-8 text-on-primary shadow-sm">
-                <div className="mb-4 font-label-mono text-label-mono uppercase text-on-primary">
-                  Network Cost
-                </div>
-                <div className="mb-4 font-h2 text-h2">~$0.0001</div>
-                <p className="mb-8 font-body text-body text-on-primary">
-                  Stellar network fees are effectively negligible for payroll transfer
-                  execution compared with legacy wire overhead.
-                </p>
-                <ul className="space-y-3 text-on-primary">
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0" />Sub-cent settlement cost</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0" />Fast finality</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0" />Transparent on-chain records</li>
-                </ul>
-              </div>
-
-              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm">
-                <div className="mb-4 font-label-mono text-label-mono uppercase text-secondary">
-                  Production Rollout
-                </div>
-                <div className="mb-4 font-h2 text-h2 text-on-surface">Custom</div>
-                <p className="mb-8 font-body text-body text-secondary">
-                  Mainnet commercial packaging, compliance layers, and operational
-                  pricing have not been published in this repository yet.
-                </p>
-                <ul className="space-y-3 text-secondary">
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />Testnet-first today</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />Clear room for enterprise rollout</li>
-                  <li className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />Pricing to be announced</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="faq" className="bg-background px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-16 text-center">
-              <h2 className="mb-4 font-h2 text-h2 text-on-surface">
-                Frequently asked questions
+        <section className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">FAQ</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
+                Answers grounded in the current repo
               </h2>
-              <p className="font-body text-body text-secondary">
-                Answers based on the current repository, not placeholder marketing copy.
-              </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="mt-10 space-y-4">
               {faqs.map((faq, index) => (
-                <details
-                  key={faq.question}
-                  className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest"
-                  open={index === 0}
-                >
-                  <summary className="cursor-pointer list-none p-6 font-body text-body font-semibold text-on-surface transition-colors hover:bg-surface-container">
+                <details key={faq.question} className="overflow-hidden rounded-[24px] border border-[#eadfce] bg-white px-6" open={index === 0}>
+                  <summary className="cursor-pointer list-none py-5 font-semibold text-[#102033]">
                     {faq.question}
                   </summary>
-                  <div className="px-6 pb-6 font-body text-body text-secondary">
-                    {faq.answer}
-                  </div>
+                  <div className="pb-5 text-sm leading-7 text-[#637085]">{faq.answer}</div>
                 </details>
               ))}
             </div>
@@ -694,47 +442,19 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-on-secondary-fixed-variant bg-on-surface">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-10 px-6 py-12 md:grid-cols-4 lg:px-8">
+      <footer className="border-t border-[#e7dccb] bg-[#fffaf2] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="mb-4 flex items-center gap-2 text-h3 text-surface">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-on-surface">
-                <Banknote className="h-4 w-4" />
-              </div>
-              <span className="font-h3">AfriWage</span>
-            </div>
-            <p className="font-body-sm text-body-sm text-secondary-fixed-dim">
-              2026 AfriWage. Built on Stellar testnet infrastructure.
-            </p>
+            <p className="font-display text-2xl font-semibold text-[#102033]">AfriWage</p>
+            <p className="mt-2 text-sm text-[#637085]">Borderless payroll for African teams, built on Stellar testnet infrastructure.</p>
           </div>
-
-          {footerColumns.map((column) => (
-            <div key={column.title} className="flex flex-col gap-3">
-              <span className="mb-2 font-body text-body font-semibold text-surface">
-                {column.title}
-              </span>
-              {column.links.map((link) => (
-                <FooterLink key={link.label} href={link.href} label={link.label} />
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <div className="mx-auto flex max-w-[1280px] flex-col items-start justify-between gap-4 border-t border-on-secondary-fixed-variant px-6 py-6 md:flex-row md:items-center lg:px-8">
-          <p className="font-label-mono text-[11px] uppercase text-secondary-fixed-dim">
-            Copyright 2026 AfriWage. Borderless payroll for African teams.
-          </p>
-          <a
-            href="https://github.com/AfriWage/AfriWage"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-label-mono text-[11px] uppercase text-primary-fixed transition-opacity hover:opacity-80"
-          >
-            <Github className="h-4 w-4" />
-            Open Source
-          </a>
+          <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[#637085]">
+            <Link href="/dashboard" className="hover:text-[#102033]">Dashboard</Link>
+            <Link href="/worker" className="hover:text-[#102033]">Worker Portal</Link>
+            <a href="https://github.com/AfriWage/AfriWage" target="_blank" rel="noopener noreferrer" className="hover:text-[#102033]">GitHub</a>
+          </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

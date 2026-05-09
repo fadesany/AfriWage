@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { WalletConnect } from '@/components/WalletConnect';
-import { truncatePublicKey } from '@/lib/stellar';
+import { truncatePublicKey } from '@/lib/stellar-format';
 import { SUPPORTED_COUNTRIES } from '@/types';
 
 // Worker page — a public payment history passport for a given Stellar address.
@@ -39,7 +39,7 @@ export default function WorkerPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-8">
             <Link
-              href="/"
+              href="/dashboard"
               className="flex items-center gap-2 text-brand-secondary transition-colors hover:text-brand-primary"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -249,8 +249,8 @@ export default function WorkerPage() {
             <span className="text-sm font-bold tracking-tight text-brand-navy uppercase">AfriWage Protocol</span>
           </div>
           <div className="flex items-center gap-8 text-[10px] font-black uppercase tracking-widest text-brand-secondary">
-            <Link href="/" className="hover:text-brand-primary transition-colors">Home</Link>
-            <Link href="/dashboard" className="hover:text-brand-primary transition-colors">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-brand-primary transition-colors">Overview</Link>
+            <Link href="/worker" className="hover:text-brand-primary transition-colors">Worker Portal</Link>
             <a href="https://github.com/AfriWage/AfriWage" target="_blank" className="hover:text-brand-primary transition-colors">GitHub</a>
           </div>
         </div>
