@@ -7,7 +7,7 @@ import {
   Landmark,
   MonitorSmartphone,
   ShieldCheck,
-  Users2,
+
   Wallet2,
   Zap,
 } from 'lucide-react';
@@ -26,7 +26,7 @@ const navLinks = [
   { label: 'Platform', href: '#platform' },
   { label: 'Flow', href: '#flow' },
   { label: 'Countries', href: '#countries' },
-  { label: 'Developers', href: '#developers' },
+
 ];
 
 const stats = [
@@ -82,14 +82,7 @@ const flowSteps = [
   'Local payout rails handle delivery into the worker’s preferred corridor.',
 ];
 
-const platformFacts = [
-  { label: 'Frontend', value: 'Next.js 14 App Router' },
-  { label: 'Language', value: 'TypeScript strict mode' },
-  { label: 'Network', value: 'Stellar testnet' },
-  { label: 'Asset', value: 'USDC' },
-  { label: 'Wallet', value: 'Freighter' },
-  { label: 'Data', value: 'Horizon API + React Query' },
-];
+
 
 const faqs = [
   {
@@ -139,7 +132,7 @@ export default function HomePage() {
         <div className="absolute bottom-[-6rem] left-1/3 h-80 w-80 rounded-full bg-[#e97b63]/10 blur-3xl" />
       </div>
 
-      <nav className="sticky top-0 z-40 border-b border-[#e7dccb] bg-[#f6efe6]/88 backdrop-blur-xl">
+      <nav className="sticky top-0 z-40 border-b border-[#e7dccb] bg-white">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#102033] text-white">
@@ -352,72 +345,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="px-4 py-14 sm:px-6 lg:px-8" id="developers">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Developers</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold text-[#102033]">
-                Developer-ready from the first commit
-              </h2>
-              <p className="mt-4 text-base leading-7 text-[#637085]">
-                The repository already contains the app, worker portal, payment flows, and SDK foundations needed to ship.
-              </p>
-            </div>
 
-            <div className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-              <Surface className="p-7 sm:p-8">
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {platformFacts.map((fact) => (
-                    <div key={fact.label} className="rounded-[22px] bg-[#fff8ef] p-5">
-                      <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">{fact.label}</p>
-                      <p className="mt-2 font-semibold text-[#102033]">{fact.value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-[22px] border border-[#eadfce] p-5">
-                    <Users2 className="h-5 w-5 text-[#1f8f55]" />
-                    <p className="mt-4 font-semibold text-[#102033]">App routes</p>
-                    <p className="mt-2 text-sm leading-6 text-[#637085]">Dashboard, wallet, send, worker, transactions, and settings flows are present.</p>
-                  </div>
-                  <div className="rounded-[22px] border border-[#eadfce] p-5">
-                    <Blocks className="h-5 w-5 text-[#1f8f55]" />
-                    <p className="mt-4 font-semibold text-[#102033]">SDK</p>
-                    <p className="mt-2 text-sm leading-6 text-[#637085]">Helpers for balances, trustlines, payments, and account operations are already available.</p>
-                  </div>
-                  <div className="rounded-[22px] border border-[#eadfce] p-5">
-                    <Code2 className="h-5 w-5 text-[#1f8f55]" />
-                    <p className="mt-4 font-semibold text-[#102033]">Open source</p>
-                    <p className="mt-2 text-sm leading-6 text-[#637085]">Use the existing UI and SDK as a base for deeper payroll automation.</p>
-                  </div>
-                </div>
-              </Surface>
-
-              <Surface className="bg-[#102033] p-7 text-white sm:p-8">
-                <p className="text-xs uppercase tracking-[0.18em] text-white/56">Start here</p>
-                <h3 className="mt-3 font-display text-3xl font-semibold">Move straight into the product.</h3>
-                <p className="mt-4 text-sm leading-7 text-white/72">
-                  The visual system now stays consistent from landing page to dashboard, so handoff feels like entering the same product rather than switching contexts.
-                </p>
-                <div className="mt-8 space-y-3">
-                  <Link href="/dashboard" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
-                    <span>Open dashboard</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link href="/worker" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
-                    <span>Open worker portal</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <a href="https://github.com/AfriWage/AfriWage" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-[20px] border border-white/12 px-4 py-3 font-semibold text-white">
-                    <span>GitHub repository</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </Surface>
-            </div>
-          </div>
-        </section>
 
         <section className="px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">

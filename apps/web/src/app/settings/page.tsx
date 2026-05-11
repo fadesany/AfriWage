@@ -107,16 +107,6 @@ export default function SettingsPage() {
             </div>
           </SurfaceCard>
 
-          <SurfaceCard className="bg-[#fff8ef]">
-            <div className="flex items-center gap-3">
-              <BellRing className="h-5 w-5 text-[#1f8f55]" />
-              <h2 className="font-display text-2xl font-semibold text-[#102033]">Why this redesign works</h2>
-            </div>
-            <p className="mt-5 text-sm leading-6 text-[#637085]">
-              Settings are no longer visually detached from the operational workflow. The same shell, typography,
-              and spacing system keeps orientation intact when an operator moves from payroll execution into configuration.
-            </p>
-          </SurfaceCard>
         </div>
       </div>
     </DashboardShell>
