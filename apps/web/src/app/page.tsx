@@ -2,13 +2,9 @@ import {
   ArrowRight,
   Blocks,
   Clock3,
-  Code2,
   Globe2,
   Landmark,
-  MonitorSmartphone,
   ShieldCheck,
-
-  Wallet2,
   Zap,
 } from 'lucide-react';
 import type { Metadata } from 'next';
