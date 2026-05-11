@@ -26,12 +26,12 @@ export async function POST(request: Request) {
       ledger: result.ledger,
       successful: result.successful,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error submitting transaction:', error);
 
     // Extract Horizon error details if available
-    const extras = error?.response?.data?.extras;
-    const resultCodes = extras?.result_codes;
+    const errorDetails = error as { response?: { data?: { extras?: { result_codes?: unknown } } } };
+    const resultCodes = errorDetails?.response?.data?.extras?.result_codes;
     const message = resultCodes
       ? `Transaction failed: ${JSON.stringify(resultCodes)}`
       : error instanceof Error
