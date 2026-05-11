@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, CheckCircle2, Clock3, MoveUpRight, Users2, Wallet2 } from 'lucide-react';
+import { ArrowRight, Clock3, MoveUpRight, Wallet2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import { DashboardShell, SurfaceCard } from '@/components/dashboard-shell';
@@ -343,46 +343,7 @@ export default function DashboardPage() {
             </div>
           </SurfaceCard>
 
-          <div className="space-y-6">
-            <SurfaceCard className="bg-[#fff8ef]">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Primary path</p>
-                  <h3 className="mt-2 font-display text-2xl font-semibold text-[#102033]">Ship payroll in 3 steps</h3>
-                </div>
-                <Users2 className="h-5 w-5 text-[#8c7760]" />
-              </div>
-              <div className="mt-6 space-y-4">
-                {[
-                  'Review which workers are ready and which profiles still need offramp details.',
-                  'Use Send payout to move USDC from treasury to the selected worker wallet.',
-                  'Confirm delivery from transaction history and share the worker passport when needed.',
-                ].map((step, index) => (
-                  <div key={step} className="flex gap-4">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#102033] text-sm font-semibold text-white">
-                      0{index + 1}
-                    </div>
-                    <p className="text-sm leading-6 text-[#637085]">{step}</p>
-                  </div>
-                ))}
-              </div>
-            </SurfaceCard>
 
-            <SurfaceCard>
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-[#dff3e8] p-3 text-[#1f8f55]">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-display text-xl font-semibold text-[#102033]">Mobile-first operator flow</p>
-                  <p className="mt-2 text-sm leading-6 text-[#637085]">
-                    The bottom navigation keeps the core routes reachable on small screens,
-                    while the sticky header preserves the main payout action.
-                  </p>
-                </div>
-              </div>
-            </SurfaceCard>
-          </div>
         </section>
       </div>
     </DashboardShell>

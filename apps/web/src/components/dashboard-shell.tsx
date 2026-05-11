@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { COMPANY_WALLET } from '@/lib/dashboard-data';
 import { copyToClipboard, cn } from '@/lib/utils';
 
@@ -39,14 +39,6 @@ export function DashboardShell({
   const pathname = usePathname();
   const [copied, setCopied] = useState(false);
 
-  const currentSection = useMemo(
-    () =>
-      navItems.find(
-        (item) => pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
-      )?.label ?? 'Overview',
-    [pathname]
-  );
-
   const handleCopy = async () => {
     const success = await copyToClipboard(COMPANY_WALLET);
     if (!success) return;
@@ -62,7 +54,7 @@ export function DashboardShell({
         <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-[#e97b63]/10 blur-3xl" />
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-80 border-r border-[#d8cebe] bg-[#fffaf2]/90 px-6 py-6 backdrop-blur-xl lg:flex lg:flex-col">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-80 border-r border-[#d8cebe] bg-[#fffaf2] px-6 py-6 lg:flex lg:flex-col">
         <Link href="/dashboard" className="rounded-[28px] border border-[#eadfce] bg-white px-5 py-5 shadow-[0_20px_50px_rgba(16,32,51,0.08)]">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102033] text-white">
@@ -73,13 +65,7 @@ export function DashboardShell({
               <p className="text-sm text-[#637085]">Payroll operations cockpit</p>
             </div>
           </div>
-          <div className="mt-5 rounded-2xl bg-[linear-gradient(135deg,#102033_0%,#1c3550_100%)] p-4 text-white">
-            <p className="text-xs uppercase tracking-[0.18em] text-white/60">Current focus</p>
-            <p className="mt-2 font-display text-xl">{currentSection}</p>
-            <p className="mt-2 text-sm text-white/72">
-              Fast payout control across treasury, workers, and transaction review.
-            </p>
-          </div>
+
         </Link>
 
         <nav className="mt-6 space-y-2">
@@ -139,7 +125,7 @@ export function DashboardShell({
       </aside>
 
       <main className="pb-24 lg:ml-80 lg:pb-10">
-        <div className="sticky top-0 z-20 border-b border-[#e7dccb] bg-[#f6efe6]/88 backdrop-blur-xl">
+        <div className="sticky top-0 z-20 border-b border-[#e7dccb] bg-white">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760] lg:hidden">
@@ -164,7 +150,7 @@ export function DashboardShell({
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e7dccb] bg-[#fffaf2]/94 px-2 py-2 backdrop-blur-xl lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e7dccb] bg-[#fffaf2] px-2 py-2 lg:hidden">
         <div className="grid grid-cols-5 gap-1">
           {navItems.map((item) => {
             const isActive =
