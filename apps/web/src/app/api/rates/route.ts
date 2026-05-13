@@ -10,9 +10,10 @@ interface ExchangeRates {
   XOF: number;
   XAF: number;
   updatedAt: string;
+  base: string;
 }
 
-const FALLBACK_RATES: Omit<ExchangeRates, 'updatedAt'> = {
+const FALLBACK_RATES = {
   NGN: 1650,
   GHS: 15.2,
   KES: 129,
@@ -52,6 +53,7 @@ export async function GET() {
       XOF: rates.xof,
       XAF: rates.xaf,
       updatedAt: new Date().toISOString(),
+      base: 'USDC',
     };
 
     return NextResponse.json(result, {
@@ -63,7 +65,7 @@ export async function GET() {
     console.error('Error fetching rates, using fallback:', error);
     
     return NextResponse.json(
-      { ...FALLBACK_RATES, updatedAt: new Date().toISOString() },
+      { ...FALLBACK_RATES, updatedAt: new Date().toISOString(), base: 'USDC' },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',

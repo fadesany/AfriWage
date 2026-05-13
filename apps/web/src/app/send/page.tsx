@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { DashboardShell, SurfaceCard } from '@/components/dashboard-shell';
 import { WalletConnect } from '@/components/WalletConnect';
-import { sendPayment } from '@/lib/stellar';
+import { signTransaction } from '@/lib/freighter';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -14,21 +14,22 @@ function isValidStellarPublicKey(value: string) {
 }
 
 export default function SendPage() {
-  const [senderSecret, setSenderSecret] = useState<string | undefined>(undefined);
+  const [senderPublicKey, setSenderPublicKey] = useState<string | null>(null);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
+  const [asset, setAsset] = useState<'XLM' | 'USDC'>('XLM');
   const [memo, setMemo] = useState('');
   const [status, setStatus] = useState<FormStatus>('idle');
   const [txHash, setTxHash] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ recipient?: string; amount?: string }>({});
 
-  const handleConnect = useCallback(() => {
-    setSenderSecret(undefined);
+  const handleConnect = useCallback((publicKey: string) => {
+    setSenderPublicKey(publicKey);
   }, []);
 
   const handleDisconnect = useCallback(() => {
-    setSenderSecret(undefined);
+    setSenderPublicKey(null);
   }, []);
 
   const validate = () => {
@@ -37,7 +38,7 @@ export default function SendPage() {
     if (!recipient) {
       nextErrors.recipient = 'Recipient address is required.';
     } else if (!isValidStellarPublicKey(recipient)) {
-      nextErrors.recipient = 'Enter a valid Stellar public key.';
+      nextErrors.recipient = 'Enter a valid Stellar public key (starts with G).';
     }
 
     if (!amount) {
@@ -54,9 +55,9 @@ export default function SendPage() {
     event.preventDefault();
     if (!validate()) return;
 
-    if (!senderSecret) {
+    if (!senderPublicKey) {
       setStatus('error');
-      setErrorMessage('Please connect a payout wallet before sending.');
+      setErrorMessage('Please connect your Freighter wallet before sending.');
       return;
     }
 
@@ -65,7 +66,42 @@ export default function SendPage() {
     setTxHash(null);
 
     try {
-      const result = await sendPayment(senderSecret, recipient, amount, memo || undefined);
+      // Step 1: Build the unsigned transaction on the server
+      const buildResponse = await fetch('/api/build-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderPublicKey,
+          recipientPublicKey: recipient.trim(),
+          amount,
+          asset,
+          memo: memo || undefined,
+        }),
+      });
+
+      if (!buildResponse.ok) {
+        const err = await buildResponse.json();
+        throw new Error(err.message || 'Failed to build transaction');
+      }
+
+      const { xdr } = await buildResponse.json();
+
+      // Step 2: Sign with Freighter (user approves in the extension popup)
+      const signedXdr = await signTransaction(xdr, senderPublicKey);
+
+      // Step 3: Submit the signed transaction
+      const submitResponse = await fetch('/api/submit-tx', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signedXdr }),
+      });
+
+      if (!submitResponse.ok) {
+        const err = await submitResponse.json();
+        throw new Error(err.message || 'Failed to submit transaction');
+      }
+
+      const result = await submitResponse.json();
       setTxHash(result.hash);
       setStatus('success');
     } catch (error) {
@@ -89,7 +125,7 @@ export default function SendPage() {
   return (
     <DashboardShell
       title="Send Payout"
-      description="A guided payment flow optimized for fast operator decisions on both desktop and mobile."
+      description="Send XLM or USDC to any Stellar wallet. Freighter signs the transaction securely in your browser."
       actions={<WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />}
     >
       {status === 'success' && txHash ? (
@@ -101,7 +137,7 @@ export default function SendPage() {
               </div>
               <h2 className="mt-6 font-display text-3xl font-semibold text-[#102033]">Payout submitted</h2>
               <p className="mt-3 max-w-lg text-sm leading-6 text-[#637085]">
-                The success state is intentionally simple: hash, explorer link, and one clear path back into the workflow.
+                Your {asset} payment was signed by Freighter and confirmed on the Stellar testnet.
               </p>
             </div>
 
@@ -161,8 +197,29 @@ export default function SendPage() {
 
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Asset</p>
-                  <div className="mt-3 flex h-14 items-center justify-center rounded-[20px] border border-[#e7dccb] bg-white font-mono text-sm text-[#102033]">
-                    USDC
+                  <div className="mt-3 flex h-14 items-center gap-0 overflow-hidden rounded-[20px] border border-[#e7dccb] bg-white">
+                    <button
+                      type="button"
+                      onClick={() => setAsset('XLM')}
+                      className={`flex h-full flex-1 items-center justify-center font-mono text-sm font-semibold transition-colors ${
+                        asset === 'XLM'
+                          ? 'bg-[#102033] text-white'
+                          : 'text-[#637085] hover:bg-[#fffaf2]'
+                      }`}
+                    >
+                      XLM
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAsset('USDC')}
+                      className={`flex h-full flex-1 items-center justify-center font-mono text-sm font-semibold transition-colors ${
+                        asset === 'USDC'
+                          ? 'bg-[#102033] text-white'
+                          : 'text-[#637085] hover:bg-[#fffaf2]'
+                      }`}
+                    >
+                      USDC
+                    </button>
                   </div>
                 </div>
               </div>
@@ -188,14 +245,16 @@ export default function SendPage() {
 
               <button
                 type="submit"
-                disabled={status === 'loading'}
+                disabled={status === 'loading' || !senderPublicKey}
                 className="flex w-full items-center justify-center gap-2 rounded-[20px] bg-[#1f8f55] px-4 py-4 font-semibold text-white shadow-[0_18px_36px_rgba(31,143,85,0.22)] disabled:opacity-70"
               >
                 {status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Sending payout
+                    Awaiting Freighter approval…
                   </>
+                ) : !senderPublicKey ? (
+                  'Connect wallet to send'
                 ) : (
                   'Confirm payout'
                 )}
@@ -208,6 +267,12 @@ export default function SendPage() {
               <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Payment summary</p>
               <div className="mt-5 space-y-4 text-sm">
                 <div className="flex items-center justify-between">
+                  <span className="text-[#637085]">Sender</span>
+                  <span className="font-mono text-[#102033]">
+                    {senderPublicKey ? `${senderPublicKey.slice(0, 6)}...${senderPublicKey.slice(-4)}` : 'Not connected'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-[#637085]">Recipient</span>
                   <span className="font-mono text-[#102033]">
                     {recipient ? `${recipient.slice(0, 6)}...${recipient.slice(-4)}` : 'Not set'}
@@ -215,12 +280,14 @@ export default function SendPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[#637085]">Amount</span>
-                  <span className="font-mono text-[#102033]">{amount || '0.00'} USDC</span>
+                  <span className="font-mono text-[#102033]">{amount || '0.00'} {asset}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[#637085]">Estimated NGN value</span>
-                  <span className="font-mono text-[#102033]">NGN {ngnEstimate}</span>
-                </div>
+                {asset === 'USDC' && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#637085]">Estimated NGN value</span>
+                    <span className="font-mono text-[#102033]">NGN {ngnEstimate}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-[#637085]">Network fee</span>
                   <span className="font-mono text-[#102033]">0.00001 XLM</span>
@@ -232,9 +299,10 @@ export default function SendPage() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 h-5 w-5 text-[#1f8f55]" />
                 <div>
-                  <p className="font-semibold text-[#102033]">Operator-first flow</p>
+                  <p className="font-semibold text-[#102033]">Freighter-signed payments</p>
                   <p className="mt-2 text-sm leading-6 text-[#637085]">
-                    The redesigned send screen keeps validation, summary, and wallet status in one place instead of splitting the decision across several screens.
+                    Your secret key never leaves the Freighter extension. The transaction is built
+                    on the server, signed in your browser, then submitted to Stellar.
                   </p>
                 </div>
               </div>

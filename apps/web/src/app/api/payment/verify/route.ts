@@ -1,86 +1,60 @@
 import { NextResponse } from 'next/server';
+import { Horizon } from '@stellar/stellar-sdk';
 
-interface PaymentProof {
-  hash: string;
-  verified: boolean;
-  status: 'success' | 'failed';
-  sender: string;
-  recipient: string;
-  amount: string;
-  asset: 'USDC' | 'XLM' | string;
-  memo?: string;
-  fee: string;
-  ledger: number;
-  createdAt: string;
-  explorerUrl: string;
-  receiptUrl: string;
-}
-
-interface HorizonOperation {
-  type: string;
-  from?: string;
-  to?: string;
-  amount?: string;
-  asset_type: string;
-  asset_code?: string;
-}
+const server = new Horizon.Server('https://horizon-testnet.stellar.org');
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const hash = searchParams.get('hash');
 
   if (!hash) {
-    return NextResponse.json({ error: 'Transaction hash is required' }, { status: 400 });
+    return NextResponse.json(
+      { message: 'Transaction hash is required' },
+      { status: 400 }
+    );
   }
 
   try {
-    // Fetch transaction and operations in parallel
-    const [txResponse, opsResponse] = await Promise.all([
-      fetch(`https://horizon-testnet.stellar.org/transactions/${hash}`),
-      fetch(`https://horizon-testnet.stellar.org/transactions/${hash}/operations`)
-    ]);
+    const tx = await server.transactions().transaction(hash).call();
 
-    if (txResponse.status === 404) {
-      return NextResponse.json({ verified: false, error: 'Transaction not found' }, { status: 404 });
+    // Fetch operations to extract payment details
+    const opsPage = await server.operations().forTransaction(hash).call();
+    const ops = opsPage.records;
+
+    let sender = tx.source_account;
+    let recipient = '';
+    let amount = '0';
+    let asset = 'XLM';
+
+    for (const op of ops) {
+      if (op.type === 'payment') {
+        const payOp = op as Horizon.HorizonApi.PaymentOperationResponse;
+        sender = payOp.from;
+        recipient = payOp.to;
+        amount = payOp.amount;
+        asset = payOp.asset_type === 'native'
+          ? 'XLM'
+          : `${(payOp as { asset_code?: string }).asset_code ?? 'UNKNOWN'}`;
+        break;
+      }
     }
 
-    const txData = await txResponse.json();
-    const opsData = await opsResponse.json();
-    const paymentOp = opsData._embedded.records.find(
-      (op: HorizonOperation) => op.type === 'payment' || op.type === 'path_payment_strict_receive'
-    );
-
-    if (!txData.successful) {
-      return NextResponse.json({ 
-        verified: false, 
-        status: 'failed', 
-        hash 
-      });
-    }
-
-    const result: PaymentProof = {
-      hash,
-      verified: true,
-      status: 'success',
-      sender: paymentOp?.from ?? txData.source_account,
-      recipient: paymentOp?.to ?? '',
-      amount: paymentOp?.amount ?? '0',
-      asset: paymentOp ? (paymentOp.asset_type === 'native' ? 'XLM' : paymentOp.asset_code ?? 'other') : 'unknown',
-      memo: txData.memo,
-      fee: (txData.fee_charged / 10000000).toString(),
-      ledger: txData.ledger,
-      createdAt: txData.created_at,
-      explorerUrl: `https://stellar.expert/explorer/testnet/tx/${hash}`,
-      receiptUrl: `https://afriwage.vercel.app/receipt/${hash}`,
-    };
-
-    return NextResponse.json(result, {
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      },
+    return NextResponse.json({
+      verified: tx.successful,
+      hash: tx.hash,
+      sender,
+      recipient,
+      amount,
+      asset,
+      memo: tx.memo_type === 'text' ? tx.memo : undefined,
+      createdAt: tx.created_at,
+      explorerUrl: `https://stellar.expert/explorer/testnet/tx/${tx.hash}`,
     });
   } catch (error) {
     console.error('Error verifying payment:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Transaction not found', verified: false },
+      { status: 404 }
+    );
   }
 }

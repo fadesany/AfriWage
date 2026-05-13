@@ -1,8 +1,8 @@
 'use client';
 
+import { getAddress, isConnected, requestAccess } from '@stellar/freighter-api';
 import { AlertCircle, CheckCircle, Copy, ExternalLink, LogOut, Wallet } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { getPublicKey, isConnected, isFreighterInstalled } from '@/lib/freighter';
 import { truncatePublicKey } from '@/lib/stellar-format';
 import { cn, copyToClipboard } from '@/lib/utils';
 import type { WalletStatus } from '@/types';
@@ -16,24 +16,32 @@ interface WalletConnectProps {
 export function WalletConnect({ onConnect, onDisconnect, className }: WalletConnectProps) {
   const [status, setStatus] = useState<WalletStatus>('disconnected');
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [hasFreighter, setHasFreighter] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const checkConnection = async () => {
-      if (!isFreighterInstalled()) return;
-
       try {
-        const connected = await isConnected();
-        if (!connected) return;
+        const connectedResult = await isConnected();
+        if (connectedResult.error) {
+          setHasFreighter(false);
+          return;
+        }
 
-        const key = await getPublicKey();
-        setPublicKey(key);
+        setHasFreighter(true);
+        if (!connectedResult.isConnected) return;
+
+        const addressResult = await getAddress();
+        if (addressResult.error || !addressResult.address) return;
+
+        setPublicKey(addressResult.address);
         setStatus('connected');
-        onConnect?.(key);
+        onConnect?.(addressResult.address);
       } catch {
         // No-op: connection is optional until the user explicitly asks for it.
+        setHasFreighter(false);
       }
     };
 
@@ -41,7 +49,7 @@ export function WalletConnect({ onConnect, onDisconnect, className }: WalletConn
   }, [onConnect]);
 
   const handleConnect = useCallback(async () => {
-    if (!isFreighterInstalled()) {
+    if (!hasFreighter) {
       setError('Freighter wallet not installed. Download it at freighter.app');
       setStatus('error');
       return;
@@ -51,17 +59,26 @@ export function WalletConnect({ onConnect, onDisconnect, className }: WalletConn
     setError(null);
 
     try {
-      const key = await getPublicKey();
-      setPublicKey(key);
+      const accessResult = await requestAccess();
+      if (accessResult.error) {
+        throw new Error(accessResult.error.message || 'Failed to connect wallet');
+      }
+
+      const addressResult = await getAddress();
+      if (addressResult.error || !addressResult.address) {
+        throw new Error(addressResult.error?.message || 'Failed to fetch wallet address');
+      }
+
+      setPublicKey(addressResult.address);
       setStatus('connected');
-      onConnect?.(key);
+      onConnect?.(addressResult.address);
     } catch (connectionError) {
       const message =
         connectionError instanceof Error ? connectionError.message : 'Failed to connect wallet';
       setError(message);
       setStatus('error');
     }
-  }, [onConnect]);
+  }, [hasFreighter, onConnect]);
 
   const handleDisconnect = useCallback(() => {
     setPublicKey(null);
