@@ -13,7 +13,8 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { WalletConnect } from '@/components/WalletConnect';
 import type { TransactionRecord } from '@/lib/stellar';
-import { getTransactionHistory, truncatePublicKey } from '@/lib/stellar';
+import { getTransactionHistory } from '@/lib/stellar';
+import { truncatePublicKey } from '@/lib/stellar-format';
 import { cn } from '@/lib/utils';
 
 /* ─── TYPES ────────────────────────────────────────────── */

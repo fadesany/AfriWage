@@ -17,11 +17,10 @@ import { useCallback, useState } from 'react';
 import { WalletConnect } from '@/components/WalletConnect';
 import type { Balance } from '@/lib/stellar';
 import {
-  formatAmount,
   fundTestnetAccount,
   getBalance,
-  truncatePublicKey,
 } from '@/lib/stellar';
+import { formatAmount, truncatePublicKey } from '@/lib/stellar-format';
 import { cn, copyToClipboard } from '@/lib/utils';
 
 /* ─── SKELETON ─────────────────────────────────────────── */

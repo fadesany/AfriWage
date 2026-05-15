@@ -3,7 +3,7 @@
 import { AlertCircle, CheckCircle, Copy, ExternalLink, LogOut, Wallet } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { getPublicKey, isConnected, isFreighterInstalled } from '@/lib/freighter';
-import { truncatePublicKey } from '@/lib/stellar';
+import { truncatePublicKey } from '@/lib/stellar-format';
 import { cn, copyToClipboard } from '@/lib/utils';
 import type { WalletStatus } from '@/types';
 

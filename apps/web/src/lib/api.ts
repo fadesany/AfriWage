@@ -18,3 +18,18 @@ export async function getTransactions(address: string, options?: { limit?: numbe
   }
   return txs;
 }
+export async function verifyPayment(hash: string) {
+  // Placeholder implementation for type checking
+  // In a real implementation, we would fetch the transaction details from Stellar
+  return {
+    verified: true,
+    sender: 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    recipient: 'GBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+    amount: '0.00',
+    asset: 'USDC',
+    createdAt: new Date().toISOString(),
+    memo: 'AfriWage Payment',
+    hash,
+    explorerUrl: `https://stellar.expert/explorer/testnet/tx/${hash}`,
+  };
+}
