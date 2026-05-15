@@ -13,36 +13,44 @@ export default function SendPage() {
   const handleDisconnect = useCallback(() => setPublicKey(null), []);
 
   return (
-    <div className="min-h-screen bg-hero-gradient">
-      <nav className="sticky top-0 z-50 border-b border-white/5 bg-stellar-blue/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <div className="min-h-screen bg-[#F9FAFB]">
+      <nav className="sticky top-0 z-50 h-16 border-b border-[#E5E7EB] bg-white">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-6">
             <Link
-              href="/dashboard"
-              className="flex items-center gap-2 text-slate-400 transition-colors hover:text-white"
+              href="/"
+              className="flex items-center gap-2 text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
             >
               <Home className="h-4 w-4" />
-              <span className="text-sm">Dashboard</span>
+              Home
             </Link>
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-gradient">
-                <SendIcon className="h-4 w-4 text-white" />
-              </div>
-              <span className="font-semibold text-white">Send Payment</span>
+              <span className="h-2 w-2 rounded-full bg-[#14A800]" />
+              <span className="font-semibold text-[#111111]">
+                Send Payment
+              </span>
             </div>
           </div>
-          <WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="hidden text-sm text-[#6B7280] transition-colors hover:text-[#111111] sm:inline"
+            >
+              Dashboard
+            </Link>
+            <WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />
+          </div>
         </div>
       </nav>
 
-      <main className="mx-auto max-w-2xl px-6 py-10">
+      <main className="mx-auto max-w-xl px-6 py-12">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-white">Send USDC Payment</h1>
-          <p className="mt-2 text-slate-400">
-            Instantly send USDC to any Stellar address on the testnet
+          <h1 className="text-2xl font-bold text-[#111111]">Send USDC Payment</h1>
+          <p className="mt-2 text-sm text-[#6B7280]">
+            Instantly send USDC to any Stellar address on the testnet.
           </p>
         </div>
-        <SendPaymentForm senderPublicKey={publicKey ?? undefined} senderSecret={undefined} />
+        <SendPaymentForm senderPublicKey={publicKey ?? undefined} />
       </main>
     </div>
   );
