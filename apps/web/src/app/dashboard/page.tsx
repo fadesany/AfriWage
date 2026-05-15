@@ -1,351 +1,594 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Clock3, MoveUpRight, Wallet2 } from 'lucide-react';
-import Link from 'next/link';
-import { useCallback, useMemo, useState } from 'react';
-import { DashboardShell, SurfaceCard } from '@/components/dashboard-shell';
-import { WalletConnect } from '@/components/WalletConnect';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError, fundTestnet, getAccount } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  dashboardMetrics,
-  payoutQueues,
-  recentTransactions,
-  workerHighlights,
-} from '@/lib/dashboard-data';
+  AlertCircle,
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  Home,
+  Loader2,
+  Send,
+  Users,
+  Wallet2,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useState } from 'react';
+import { WalletConnect } from '@/components/WalletConnect';
+import type { Balance, TransactionRecord } from '@/lib/stellar';
+import {
+  fundTestnetAccount,
+  getBalance,
+  getTransactionHistory,
+} from '@/lib/stellar';
+import { formatAmount, truncatePublicKey } from '@/lib/stellar-format';
+import { cn, copyToClipboard } from '@/lib/utils';
+
+/* ─── SKELETON ─────────────────────────────────────────── */
+
+function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'animate-pulse rounded-lg bg-white/10',
+        className
+      )}
+    />
+  );
+}
+
+/* ─── PAGE ─────────────────────────────────────────────── */
 
 export default function DashboardPage() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [funding, setFunding] = useState(false);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const accountQuery = useQuery({
-    queryKey: ['dashboard-account', address],
-    queryFn: () => getAccount(address ?? ''),
-    enabled: Boolean(address),
-    refetchInterval: 30000,
-  });
-
-  const handleConnect = useCallback((publicKey: string) => {
-    setAddress(publicKey);
+  const handleConnect = useCallback((pk: string) => {
+    setPublicKey(pk);
   }, []);
 
   const handleDisconnect = useCallback(() => {
-    setAddress(null);
+    setPublicKey(null);
   }, []);
 
-  const balanceCards = useMemo(
-    () => [
-      {
-        asset: 'USDC Treasury',
-        value: accountQuery.data ? `${accountQuery.data.balances.usdc} USDC` : '--',
-        detail: 'Primary payroll pool',
-      },
-      {
-        asset: 'XLM Gas Buffer',
-        value: accountQuery.data ? `${accountQuery.data.balances.xlm} XLM` : '--',
-        detail: 'Network fees and account ops',
-      },
-    ],
-    [accountQuery.data]
+  return (
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* ── TOP NAVBAR ────────────────────────────── */}
+      <nav className="sticky top-0 z-50 h-16 border-b border-white/10 bg-[#0A0A0A]">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-white"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Link>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#14A800]" />
+              <span className="font-semibold text-white">Dashboard</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/worker"
+              className="hidden items-center gap-1.5 text-sm text-white/50 transition-colors hover:text-white sm:flex"
+            >
+              <Users className="h-4 w-4" />
+              Worker Portal
+            </Link>
+            <WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />
+          </div>
+        </div>
+      </nav>
+
+      {/* ── MAIN CONTENT ──────────────────────────── */}
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        {!publicKey ? (
+          <DisconnectedState
+            onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
+          />
+        ) : (
+          <ConnectedDashboard
+            publicKey={publicKey}
+            queryClient={queryClient}
+          />
+        )}
+      </main>
+    </div>
   );
-  const accountNotFound =
-    address &&
-    !accountQuery.isLoading &&
-    !accountQuery.data &&
-    accountQuery.error instanceof ApiError &&
-    accountQuery.error.status === 404;
+}
+
+/* ─── DISCONNECTED STATE ───────────────────────────────── */
+
+function DisconnectedState({
+  onConnect,
+  onDisconnect,
+}: {
+  onConnect: (pk: string) => void;
+  onDisconnect: () => void;
+}) {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <Wallet2 className="mx-auto h-16 w-16 text-[#E5E7EB]" />
+
+      <h2 className="mt-6 text-2xl font-bold text-white">
+        Connect your wallet to get started
+      </h2>
+
+      <p className="mx-auto mt-3 max-w-sm text-[#6B7280]">
+        AfriWage uses Freighter, the official Stellar browser wallet. Connect to
+        view your real balances and send payments.
+      </p>
+
+      <div className="mt-8">
+        <WalletConnect onConnect={onConnect} onDisconnect={onDisconnect} />
+      </div>
+
+      <a
+        href="https://www.freighter.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 text-sm text-[#6B7280] underline transition-colors hover:text-white"
+      >
+        Don&apos;t have Freighter? Download it free →
+      </a>
+    </div>
+  );
+}
+
+/* ─── CONNECTED DASHBOARD ──────────────────────────────── */
+
+function ConnectedDashboard({
+  publicKey,
+  queryClient,
+}: {
+  publicKey: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+}) {
+  /* ── Data fetching ── */
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    error: balanceError,
+  } = useQuery<Balance>({
+    queryKey: ['account', publicKey],
+    queryFn: () => getBalance(publicKey),
+    enabled: !!publicKey,
+    refetchInterval: 30000,
+  });
+
+  const {
+    data: transactions,
+    isLoading: txLoading,
+  } = useQuery<TransactionRecord[]>({
+    queryKey: ['transactions', publicKey],
+    queryFn: () => getTransactionHistory(publicKey),
+    enabled: !!publicKey,
+  });
+
+  /* ── Fund testnet account ── */
+  const fundMutation = useMutation({
+    mutationFn: () => fundTestnetAccount(publicKey),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account', publicKey] });
+    },
+  });
+
+  const accountActive = balance && balance.xlm !== '0' && balance.xlm !== '0.0000000';
 
   return (
-    <DashboardShell
-      title="Operations Overview"
-      description="Monitor treasury health, move payroll faster, and catch payout blockers before workers feel them."
-      actions={<WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />}
-    >
-      <div className="space-y-6">
-        <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-          <SurfaceCard className="overflow-hidden bg-[linear-gradient(135deg,#102033_0%,#18324c_54%,#1f8f55_160%)] text-white">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-2xl">
-                <p className="text-xs uppercase tracking-[0.18em] text-white/60">Today&apos;s command view</p>
-                <h2 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">
-                  Keep every payout lane visible, funded, and trusted.
-                </h2>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-white/74">
-                  The redesigned AfriWage dashboard centers the actual operator workflow:
-                  fund treasury, review workers, send payroll, and confirm delivery.
-                </p>
-              </div>
+    <div className="space-y-8">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <p className="mt-1 text-sm text-[#6B7280]">
+          Your Stellar wallet overview
+        </p>
+      </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Link
-                  href="/send"
-                  className="rounded-[20px] bg-white px-5 py-4 text-center font-semibold text-[#102033] transition-transform hover:scale-[0.99] active:scale-[0.97]"
-                >
-                  Send payroll
-                </Link>
-                <Link
-                  href="/transactions"
-                  className="rounded-[20px] border border-white/15 px-5 py-4 text-center font-semibold text-white transition-colors hover:bg-white/8"
-                >
-                  Review activity
-                </Link>
-              </div>
+      {/* ── STAT CARDS ────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {balanceLoading ? (
+          <>
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
+        ) : balanceError ? (
+          <div className="col-span-full rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              Failed to load account data. The account may not exist on testnet.
             </div>
-          </SurfaceCard>
+          </div>
+        ) : balance ? (
+          <>
+            {/* XLM Balance */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#6B7280]">
+                XLM Balance
+              </p>
+              <p className="mt-2 text-3xl font-bold text-white">
+                {formatAmount(balance.xlm, '')}
+              </p>
+              <p className="mt-1 text-sm text-[#6B7280]">Stellar Lumens</p>
+            </div>
 
-          <SurfaceCard className="bg-[#fff8ef]">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Payroll runway</p>
-                <h3 className="mt-2 font-display text-2xl font-semibold text-[#102033]">
-                  {address ? 'Connected treasury' : 'Connect treasury wallet'}
-                </h3>
-              </div>
-              <div className="rounded-2xl bg-[#dff3e8] p-3 text-[#1f8f55]">
-                <Wallet2 className="h-5 w-5" />
-              </div>
-            </div>
-            <div className="mt-6 h-3 rounded-full bg-[#efe3d0]">
-              <div
-                className="h-3 rounded-full bg-[linear-gradient(90deg,#1f8f55_0%,#8dca62_100%)]"
-                style={{
-                  width:
-                    accountQuery.data && Number.parseFloat(accountQuery.data.balances.usdc) > 0
-                      ? '72%'
-                      : '18%',
-                }}
-              />
-            </div>
-            <div className="mt-5 space-y-3 text-sm text-[#637085]">
-              {accountQuery.isLoading ? (
-                <>
-                  <Skeleton className="h-5 w-full" />
-                  <Skeleton className="h-5 w-4/5" />
-                </>
-              ) : accountQuery.data?.exists ? (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span>USDC treasury available</span>
-                    <span className="font-mono text-[#102033]">
-                      {accountQuery.data.balances.usdc} USDC
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>XLM available</span>
-                    <span className="font-medium text-[#102033]">
-                      {accountQuery.data.balances.xlm} XLM
-                    </span>
-                  </div>
-                </>
-              ) : accountNotFound ? (
-                <div className="space-y-4">
-                  <p className="font-medium text-[#102033]">Account not found on testnet</p>
-                  <button
-                    type="button"
-                    disabled={funding}
-                    onClick={async () => {
-                      if (!address) return;
-                      setFunding(true);
-                      try {
-                        await fundTestnet(address);
-                        await accountQuery.refetch();
-                      } finally {
-                        setFunding(false);
-                      }
-                    }}
-                    className="rounded-[18px] bg-[#1f8f55] px-4 py-3 font-semibold text-white disabled:opacity-60"
-                  >
-                    {funding ? 'Funding...' : 'Fund Testnet Account'}
-                  </button>
-                </div>
-              ) : accountQuery.isError ? (
-                <p className="font-medium text-[#c45a43]">
-                  {accountQuery.error instanceof Error
-                    ? accountQuery.error.message
-                    : 'Failed to load account balances'}
-                </p>
-              ) : address ? (
-                <div className="space-y-4">
-                  <p className="font-medium text-[#102033]">Account not found on testnet</p>
-                  <button
-                    type="button"
-                    disabled={funding}
-                    onClick={async () => {
-                      if (!address) return;
-                      setFunding(true);
-                      try {
-                        await fundTestnet(address);
-                        await accountQuery.refetch();
-                      } finally {
-                        setFunding(false);
-                      }
-                    }}
-                    className="rounded-[18px] bg-[#1f8f55] px-4 py-3 font-semibold text-white disabled:opacity-60"
-                  >
-                    {funding ? 'Funding...' : 'Fund Testnet Account'}
-                  </button>
-                </div>
-              ) : (
-                <p className="font-medium text-[#102033]">
-                  Connect a wallet to load live balances.
-                </p>
-              )}
-            </div>
-          </SurfaceCard>
-        </section>
-
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {accountQuery.isLoading
-            ? Array.from({ length: 2 }).map((_, index) => (
-                <SurfaceCard key={index} className="bg-white/95">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="mt-4 h-10 w-40" />
-                  <Skeleton className="mt-3 h-4 w-48" />
-                </SurfaceCard>
-              ))
-            : balanceCards.map((metric) => (
-                <SurfaceCard key={metric.asset} className="bg-white/95">
-                  <p className="text-sm text-[#637085]">{metric.asset}</p>
-                  <div className="mt-4 flex items-end justify-between gap-4">
-                    <p className="font-display text-3xl font-semibold text-[#102033]">{metric.value}</p>
-                    <span className="rounded-full bg-[#f3ecdf] px-3 py-1 text-xs font-semibold text-[#8c7760]">
-                      Live
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-[#637085]">{metric.detail}</p>
-                </SurfaceCard>
-              ))}
-          {dashboardMetrics.map((metric) => (
-            <SurfaceCard key={metric.label} className="bg-white/95">
-              <p className="text-sm text-[#637085]">{metric.label}</p>
-              <div className="mt-4 flex items-end justify-between gap-4">
-                <p className="font-display text-3xl font-semibold text-[#102033]">{metric.value}</p>
-                <span className="rounded-full bg-[#f3ecdf] px-3 py-1 text-xs font-semibold text-[#8c7760]">
-                  {metric.change}
+            {/* USDC Balance */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#6B7280]">
+                USDC Balance
+              </p>
+              <p className="mt-2 text-3xl font-bold text-white">
+                {formatAmount(balance.usdc, '')}
+              </p>
+              <div className="mt-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#14A800]/10 px-3 py-1 text-xs text-[#14A800]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#14A800]" />
+                  Live on testnet
                 </span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-[#637085]">{metric.detail}</p>
-            </SurfaceCard>
-          ))}
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
-          <SurfaceCard>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Queue status</p>
-                <h3 className="mt-2 font-display text-2xl font-semibold text-[#102033]">What needs attention next</h3>
-              </div>
-              <Clock3 className="h-5 w-5 text-[#8c7760]" />
-            </div>
-            <div className="mt-6 space-y-4">
-              {payoutQueues.map((queue) => (
-                <div
-                  key={queue.title}
-                  className="rounded-[22px] border border-[#efe3d0] bg-[#fffaf2] p-4"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-display text-lg font-semibold text-[#102033]">{queue.title}</p>
-                    <span className="font-mono text-sm text-[#1f8f55]">{queue.amount}</span>
-                  </div>
-                  <p className="mt-2 text-sm text-[#637085]">{queue.detail}</p>
-                </div>
-              ))}
-            </div>
-          </SurfaceCard>
-
-          <SurfaceCard>
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Worker readiness</p>
-                <h3 className="mt-2 font-display text-2xl font-semibold text-[#102033]">Who can be paid right now</h3>
-              </div>
-              <Link href="/worker" className="text-sm font-semibold text-[#1f8f55]">
-                Open worker view
-              </Link>
             </div>
 
-            <div className="mt-6 space-y-3">
-              {workerHighlights.map((worker) => (
-                <div
-                  key={worker.name}
-                  className="flex flex-col gap-3 rounded-[22px] border border-[#efe3d0] bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102033] text-sm font-semibold text-white">
-                      {worker.name
-                        .split(' ')
-                        .map((name) => name[0])
-                        .join('')
-                        .slice(0, 2)}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#102033]">{worker.name}</p>
-                      <p className="text-sm text-[#637085]">{worker.country}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 sm:justify-end">
-                    <span className="font-mono text-sm text-[#102033]">{worker.amount}</span>
-                    <span className="rounded-full bg-[#dff3e8] px-3 py-1 text-xs font-semibold text-[#1f8f55]">
-                      {worker.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SurfaceCard>
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <SurfaceCard>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Recent activity</p>
-                <h3 className="mt-2 font-display text-2xl font-semibold text-[#102033]">Payment confidence feed</h3>
-              </div>
-              <Link
-                href="/transactions"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#1f8f55]"
+            {/* Account Status */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#6B7280]">
+                Account
+              </p>
+              <p
+                className={cn(
+                  'mt-2 text-3xl font-bold',
+                  accountActive ? 'text-[#14A800]' : 'text-[#E24B4A]'
+                )}
               >
-                All transactions
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                {accountActive ? 'Active' : 'Not funded'}
+              </p>
+              <p className="mt-1 font-mono text-sm text-[#6B7280]">
+                {truncatePublicKey(publicKey, 6)}
+              </p>
             </div>
+          </>
+        ) : null}
+      </div>
 
-            <div className="mt-6 space-y-3">
-              {recentTransactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex flex-col gap-3 rounded-[22px] border border-[#efe3d0] bg-[#fffaf2] p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-2xl bg-[#dff3e8] p-3 text-[#1f8f55]">
-                      <MoveUpRight className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#102033]">{transaction.title}</p>
-                      <p className="mt-1 text-sm text-[#637085]">
-                        {transaction.counterparty} • {transaction.time}
-                      </p>
-                    </div>
+      {/* ── UNFUNDED WARNING ──────────────────────── */}
+      {balance && !accountActive && (
+        <div className="flex items-center justify-between rounded-xl border border-[#FED7AA] bg-[#FFF7ED]/10 p-4">
+          <p className="text-sm text-[#FED7AA]">
+            ⚠️ Account not funded on testnet
+          </p>
+          <button
+            type="button"
+            onClick={() => fundMutation.mutate()}
+            disabled={fundMutation.isPending}
+            className="flex items-center gap-2 rounded-lg bg-[#14A800] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#108A00] disabled:opacity-50"
+          >
+            {fundMutation.isPending && (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            )}
+            Fund with Friendbot
+          </button>
+        </div>
+      )}
+
+      {fundMutation.isError && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          <AlertCircle className="mr-2 inline h-4 w-4" />
+          Funding failed: {fundMutation.error instanceof Error ? fundMutation.error.message : 'Unknown error'}
+        </div>
+      )}
+
+      {fundMutation.isSuccess && (
+        <div className="rounded-xl border border-[#BBF7D0]/30 bg-[#14A800]/10 p-4 text-sm text-[#14A800]">
+          <CheckCircle2 className="mr-2 inline h-4 w-4" />
+          Account funded successfully! Balances will refresh shortly.
+        </div>
+      )}
+
+      {/* ── SEND PAYMENT ──────────────────────────── */}
+      <SendPaymentCard />
+
+      {/* ── RECENT TRANSACTIONS ───────────────────── */}
+      <RecentTransactions
+        publicKey={publicKey}
+        transactions={transactions ?? []}
+        isLoading={txLoading}
+      />
+    </div>
+  );
+}
+
+/* ─── SEND PAYMENT CARD ────────────────────────────────── */
+
+function SendPaymentCard() {
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  const [memo, setMemo] = useState('');
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const isValidAddress = recipient.startsWith('G') && recipient.length === 56;
+
+  const handleReset = () => {
+    setRecipient('');
+    setAmount('');
+    setMemo('');
+    setTxHash(null);
+    setSendError(null);
+  };
+
+  if (txHash) {
+    return (
+      <div className="rounded-xl border border-[#BBF7D0] bg-[#F0FDF4]/5 p-6">
+        <CheckCircle2 className="mx-auto h-10 w-10 text-[#14A800]" />
+        <p className="mt-4 text-center text-lg font-semibold text-white">
+          Payment sent successfully!
+        </p>
+        <div className="mx-auto mt-4 flex max-w-md items-center gap-2 rounded-lg bg-white/5 p-3">
+          <p className="flex-1 truncate font-mono text-xs text-[#6B7280]">
+            {txHash}
+          </p>
+          <button
+            type="button"
+            onClick={async () => {
+              await copyToClipboard(txHash);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className="shrink-0 text-[#6B7280] hover:text-white"
+          >
+            {copied ? (
+              <CheckCircle2 className="h-4 w-4 text-[#14A800]" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-4">
+          <a
+            href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-[#14A800] hover:underline"
+          >
+            View on Stellar Explorer →
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="mx-auto mt-4 block rounded-lg border border-white/10 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/5"
+        >
+          Send another
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-6 text-lg font-semibold text-white">Send Payment</h3>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Recipient */}
+        <div>
+          <label
+            htmlFor="dash-recipient"
+            className="mb-1.5 block text-sm font-medium text-[#6B7280]"
+          >
+            Recipient Stellar Address
+          </label>
+          <div className="relative">
+            <input
+              id="dash-recipient"
+              type="text"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder="G... Stellar address"
+              className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 pr-10 font-mono text-sm text-white placeholder-[#6B7280] outline-none transition-colors focus:border-[#14A800]/50"
+            />
+            {isValidAddress && (
+              <CheckCircle2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#14A800]" />
+            )}
+          </div>
+        </div>
+
+        {/* Amount */}
+        <div>
+          <label
+            htmlFor="dash-amount"
+            className="mb-1.5 block text-sm font-medium text-[#6B7280]"
+          >
+            Amount (USDC)
+          </label>
+          <div className="relative">
+            <input
+              id="dash-amount"
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 pr-16 text-sm text-white placeholder-[#6B7280] outline-none transition-colors focus:border-[#14A800]/50"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#6B7280]">
+              USDC
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Memo */}
+      <div className="mt-4">
+        <label
+          htmlFor="dash-memo"
+          className="mb-1.5 block text-sm font-medium text-[#6B7280]"
+        >
+          Memo (optional)
+        </label>
+        <input
+          id="dash-memo"
+          type="text"
+          maxLength={28}
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="Payment for design work"
+          className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-[#6B7280] outline-none transition-colors focus:border-[#14A800]/50"
+        />
+      </div>
+
+      {/* Fee row */}
+      <p className="mt-3 text-xs text-[#6B7280]">
+        Network fee: ~0.00001 XLM · Settlement: &lt; 5s
+      </p>
+
+      {/* Error */}
+      {sendError && (
+        <div className="mt-4 rounded-xl border border-[#FECDD3]/30 bg-[#FFF1F2]/10 p-4 text-sm text-[#E24B4A]">
+          Payment failed: {sendError}
+        </div>
+      )}
+
+      {/* Submit */}
+      <Link
+        href="/send"
+        className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#14A800] font-semibold text-white transition-colors hover:bg-[#108A00]"
+      >
+        <Send className="h-4 w-4" />
+        Send Payment →
+      </Link>
+    </div>
+  );
+}
+
+/* ─── RECENT TRANSACTIONS ──────────────────────────────── */
+
+function RecentTransactions({
+  publicKey,
+  transactions,
+  isLoading,
+}: {
+  publicKey: string;
+  transactions: TransactionRecord[];
+  isLoading: boolean;
+}) {
+  const recent = transactions.slice(0, 5);
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white">
+          Recent Transactions
+        </h3>
+        <Link
+          href="/transactions"
+          className="text-sm text-[#14A800] transition-colors hover:underline"
+        >
+          View all →
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4 py-4">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+              <div className="space-y-2 text-right">
+                <Skeleton className="ml-auto h-3 w-20" />
+                <Skeleton className="ml-auto h-3 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : recent.length === 0 ? (
+        <div className="flex h-32 items-center justify-center rounded-xl bg-white/5">
+          <p className="text-center text-sm text-[#6B7280]">
+            No transactions yet. Send your first payment above.
+          </p>
+        </div>
+      ) : (
+        <div>
+          {recent.map((tx, idx) => {
+            const incoming = tx.to === publicKey;
+            return (
+              <div
+                key={tx.id}
+                className={cn(
+                  'flex items-center justify-between py-4',
+                  idx < recent.length - 1 && 'border-b border-white/10'
+                )}
+              >
+                {/* Left */}
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      'flex h-8 w-8 items-center justify-center rounded-full bg-white/5',
+                    )}
+                  >
+                    {incoming ? (
+                      <ArrowDownLeft className="h-4 w-4 text-[#14A800]" />
+                    ) : (
+                      <ArrowUpRight className="h-4 w-4 text-[#E24B4A]" />
+                    )}
                   </div>
-
-                  <div className="flex items-center justify-between gap-3 sm:justify-end">
-                    <p className="font-mono text-sm text-[#102033]">{transaction.amount}</p>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#8c7760]">
-                      {transaction.status}
-                    </span>
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {tx.memo || 'Payment'}
+                    </p>
+                    <p className="text-xs text-[#6B7280]">
+                      {new Date(tx.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </SurfaceCard>
 
+                {/* Right */}
+                <div className="text-right">
+                  <p
+                    className={cn(
+                      'text-sm font-semibold',
+                      incoming ? 'text-[#14A800]' : 'text-[#E24B4A]'
+                    )}
+                  >
+                    {incoming ? '+' : '-'}
+                    {tx.amount} {tx.asset}
+                  </p>
+                  <p className="font-mono text-xs text-[#6B7280]">
+                    {truncatePublicKey(incoming ? tx.from : tx.to, 6)}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
-        </section>
-      </div>
-    </DashboardShell>
+/* ─── STAT CARD SKELETON ───────────────────────────────── */
+
+function StatCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+      <Skeleton className="h-3 w-20" />
+      <Skeleton className="mt-3 h-8 w-24" />
+      <Skeleton className="mt-2 h-3 w-16" />
+    </div>
   );
 }
