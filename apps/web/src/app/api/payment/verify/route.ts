@@ -8,10 +8,7 @@ export async function GET(request: Request) {
   const hash = searchParams.get('hash');
 
   if (!hash) {
-    return NextResponse.json(
-      { message: 'Transaction hash is required' },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: 'Transaction hash is required' }, { status: 400 });
   }
 
   try {
@@ -32,9 +29,10 @@ export async function GET(request: Request) {
         sender = payOp.from;
         recipient = payOp.to;
         amount = payOp.amount;
-        asset = payOp.asset_type === 'native'
-          ? 'XLM'
-          : `${(payOp as { asset_code?: string }).asset_code ?? 'UNKNOWN'}`;
+        asset =
+          payOp.asset_type === 'native'
+            ? 'XLM'
+            : `${(payOp as { asset_code?: string }).asset_code ?? 'UNKNOWN'}`;
         break;
       }
     }

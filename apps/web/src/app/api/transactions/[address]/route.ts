@@ -1,17 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getTransactionHistory, accountExists } from '@AfriWage/sdk';
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { address: string } }
-) {
+export async function GET(_request: Request, { params }: { params: { address: string } }) {
   const { address } = params;
 
   if (!address || address.length !== 56 || !address.startsWith('G')) {
-    return NextResponse.json(
-      { message: 'Invalid Stellar public key' },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: 'Invalid Stellar public key' }, { status: 400 });
   }
 
   try {

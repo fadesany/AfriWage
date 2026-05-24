@@ -9,6 +9,18 @@ export {
   getTransactionHistory,
   sendPayment,
 } from './payment';
+
+export {
+  fetchAnchorToml,
+  getAuthChallenge,
+  submitAuthChallenge,
+  getInteractiveUrl,
+  getTransactionStatus,
+  buildWithdrawalTransaction,
+  submitTransaction,
+} from './anchor';
+export type { InteractiveResponse } from './anchor';
+
 export type {
   Balance,
   PaymentResult,
@@ -16,6 +28,7 @@ export type {
   StellarKeypair,
   TransactionRecord,
 } from './types';
+
 export {
   FRIENDBOT_URL,
   HORIZON_TESTNET_URL,

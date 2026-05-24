@@ -120,7 +120,9 @@ export function DashboardShell({ title, description, children, actions }: Dashbo
               <h1 className="font-display text-xl sm:text-[1.9rem] font-semibold leading-tight text-[#102033]">
                 {title}
               </h1>
-              <p className="mt-1 max-w-2xl text-xs sm:text-sm text-[#637085] hidden sm:block">{description}</p>
+              <p className="mt-1 max-w-2xl text-xs sm:text-sm text-[#637085] hidden sm:block">
+                {description}
+              </p>
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -155,7 +157,12 @@ export function DashboardShell({ title, description, children, actions }: Dashbo
                   isActive ? 'text-[#102033]' : 'text-[#637085]'
                 )}
               >
-                <div className={cn("p-1.5 rounded-xl transition-colors", isActive ? "bg-[#102033] text-white" : "text-[#637085] bg-transparent")}>
+                <div
+                  className={cn(
+                    'p-1.5 rounded-xl transition-colors',
+                    isActive ? 'bg-[#102033] text-white' : 'text-[#637085] bg-transparent'
+                  )}
+                >
                   <Icon className="h-5 w-5" />
                 </div>
                 <span>{item.label}</span>

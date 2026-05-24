@@ -5,19 +5,22 @@ const flowCards = [
     step: '01',
     title: 'Treasury wallet',
     label: 'Payroll funded once',
-    description: 'Operators prepare one payroll batch instead of managing separate cross-border transfers.',
+    description:
+      'Operators prepare one payroll batch instead of managing separate cross-border transfers.',
   },
   {
     step: '02',
     title: 'Stellar settlement',
     label: 'Signed and settled in seconds',
-    description: 'AfriWage uses Stellar to move value quickly while keeping each transfer traceable.',
+    description:
+      'AfriWage uses Stellar to move value quickly while keeping each transfer traceable.',
   },
   {
     step: '03',
     title: 'Local payout corridors',
     label: 'Delivered in familiar currencies',
-    description: 'Teams receive payroll through supported African payout corridors with clear proof.',
+    description:
+      'Teams receive payroll through supported African payout corridors with clear proof.',
   },
 ];
 

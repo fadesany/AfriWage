@@ -9,11 +9,13 @@ import {
   ExternalLink,
   Loader2,
   Wallet2,
+  Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { DashboardShell, SurfaceCard } from '@/components/dashboard-shell';
 import { WalletConnect } from '@/components/WalletConnect';
+import { WithdrawModal } from '@/components/WithdrawModal';
 import type { Balance } from '@/lib/stellar';
 import { fundTestnetAccount, getBalance } from '@/lib/stellar';
 import { formatAmount } from '@/lib/stellar-format';
@@ -106,6 +108,7 @@ function ConnectedWallet({
   queryClient: ReturnType<typeof useQueryClient>;
 }) {
   const [addressCopied, setAddressCopied] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const {
     data: balance,
@@ -245,6 +248,14 @@ function ConnectedWallet({
           >
             View Transactions
           </Link>
+          <button
+            type="button"
+            onClick={() => setIsWithdrawModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-[#102033] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-black"
+          >
+            Instant Settlement
+            <Zap className="h-4 w-4 text-[#ffcc00]" />
+          </button>
         </div>
 
         <div className="mt-6 border-t border-[#efe3d0] pt-6">
@@ -284,6 +295,12 @@ function ConnectedWallet({
           </div>
         </div>
       </div>
+      <WithdrawModal
+        isOpen={isWithdrawModalOpen}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        userAddress={publicKey}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['account', publicKey] })}
+      />
     </div>
   );
 }

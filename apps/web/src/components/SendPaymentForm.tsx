@@ -37,33 +37,30 @@ export function SendPaymentForm({ senderPublicKey, className }: SendPaymentFormP
     },
   });
 
-  const onSubmit = useCallback(
-    async () => {
-      if (!senderPublicKey) {
-        setErrorMessage('Please connect your wallet before sending a payment.');
-        setStatus('error');
-        return;
-      }
+  const onSubmit = useCallback(async () => {
+    if (!senderPublicKey) {
+      setErrorMessage('Please connect your wallet before sending a payment.');
+      setStatus('error');
+      return;
+    }
 
-      setStatus('loading');
-      setErrorMessage(null);
-      setTxHash(null);
+    setStatus('loading');
+    setErrorMessage(null);
+    setTxHash(null);
 
-      try {
-        // Mocking a successful transaction for UI purposes since Freighter signing isn't fully wired for this demo
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        
-        // Mock hash
-        setTxHash('542a1f2...9a2f77c');
-        setStatus('success');
-        reset();
-      } catch (err) {
-        setErrorMessage('Payment failed. Please check your balance and try again.');
-        setStatus('error');
-      }
-    },
-    [senderPublicKey, reset]
-  );
+    try {
+      // Mocking a successful transaction for UI purposes since Freighter signing isn't fully wired for this demo
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Mock hash
+      setTxHash('542a1f2...9a2f77c');
+      setStatus('success');
+      reset();
+    } catch (err) {
+      setErrorMessage('Payment failed. Please check your balance and try again.');
+      setStatus('error');
+    }
+  }, [senderPublicKey, reset]);
 
   const handleReset = useCallback(() => {
     setStatus('idle');
@@ -80,9 +77,7 @@ export function SendPaymentForm({ senderPublicKey, className }: SendPaymentFormP
           </div>
           <div>
             <h3 className="text-xl font-bold text-[#111111]">Payment Sent!</h3>
-            <p className="mt-2 text-sm text-[#6B7280]">
-              Your USDC has been delivered instantly.
-            </p>
+            <p className="mt-2 text-sm text-[#6B7280]">Your USDC has been delivered instantly.</p>
           </div>
 
           <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-4 text-left">
@@ -132,8 +127,7 @@ export function SendPaymentForm({ senderPublicKey, className }: SendPaymentFormP
               {...register('recipientPublicKey', {
                 required: 'Recipient address is required',
                 validate: (value) =>
-                  StrKey.isValidEd25519PublicKey(value) ||
-                  'Invalid Stellar address',
+                  StrKey.isValidEd25519PublicKey(value) || 'Invalid Stellar address',
               })}
             />
             {errors.recipientPublicKey && (

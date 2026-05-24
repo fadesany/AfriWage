@@ -5,6 +5,7 @@ export type {
   PaymentResult,
   StellarKeypair,
   TransactionRecord,
+  InteractiveResponse,
 } from '@AfriWage/sdk';
 // Re-export SDK helpers for use in web app
 export {
@@ -17,6 +18,13 @@ export {
   sendPayment,
   USDC_ASSET_CODE,
   USDC_ISSUER_TESTNET,
+  fetchAnchorToml,
+  getAuthChallenge,
+  submitAuthChallenge,
+  getInteractiveUrl,
+  getTransactionStatus,
+  buildWithdrawalTransaction,
+  submitTransaction,
 } from '@AfriWage/sdk';
 
 // Network configuration

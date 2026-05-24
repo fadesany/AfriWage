@@ -70,7 +70,9 @@ export default function ReceiptPage() {
             <div className="space-y-6">
               <div className="flex flex-col gap-4 rounded-[24px] bg-[#fffaf2] p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Verification status</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">
+                    Verification status
+                  </p>
                   <p className="mt-2 font-display text-2xl font-semibold text-[#102033]">
                     {receiptQuery.data.verified ? 'Payment verified' : 'Verification failed'}
                   </p>
@@ -111,9 +113,13 @@ export default function ReceiptPage() {
                   </p>
                 </div>
                 <div className="rounded-[24px] border border-[#eadfce] bg-white p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Date &amp; time</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">
+                    Date &amp; time
+                  </p>
                   <p className="mt-3 text-sm text-[#102033]">
-                    {receiptQuery.data.createdAt ? formatDate(receiptQuery.data.createdAt) : 'Unavailable'}
+                    {receiptQuery.data.createdAt
+                      ? formatDate(receiptQuery.data.createdAt)
+                      : 'Unavailable'}
                   </p>
                 </div>
               </div>
@@ -127,7 +133,9 @@ export default function ReceiptPage() {
 
               <div className="rounded-[24px] border border-[#eadfce] bg-white p-5">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">Transaction hash</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#8c7760]">
+                    Transaction hash
+                  </p>
                   <button
                     type="button"
                     onClick={handleCopyHash}
@@ -137,7 +145,9 @@ export default function ReceiptPage() {
                     {copiedHash ? 'Copied' : 'Copy'}
                   </button>
                 </div>
-                <p className="mt-3 break-all font-mono text-sm text-[#102033]">{receiptQuery.data.hash}</p>
+                <p className="mt-3 break-all font-mono text-sm text-[#102033]">
+                  {receiptQuery.data.hash}
+                </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">

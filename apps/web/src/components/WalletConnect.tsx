@@ -152,7 +152,9 @@ export function WalletConnect({ onConnect, onDisconnect, className }: WalletConn
         )}
       >
         <Wallet className="h-4 w-4" />
-        <span className="hidden sm:inline">{status === 'connecting' ? 'Connecting…' : 'Connect Wallet'}</span>
+        <span className="hidden sm:inline">
+          {status === 'connecting' ? 'Connecting…' : 'Connect Wallet'}
+        </span>
       </button>
 
       {/* Error banner — always clearly visible */}
